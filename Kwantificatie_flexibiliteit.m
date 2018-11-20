@@ -9,9 +9,12 @@
 % 2) Run MPC  with step in price signal (nog bekijken met
 %    Jan/Bram/Anke/Alessia hoe dit praktisch kan) = Q_STEP
 
+BuiInit
+
 Ts = model.plant.Ts;
-Q_REF = outdata.data.U.ref;
-Q_STEP = outdata.data.U.step;
+
+Q_REF = sum(outdata.data.U.ref); % sum(A) telt alle kolomelementen van matrix A op resulterend in 1 rijmatrix
+Q_STEP = sum(outdata.data.U.step);
 
 FF = Q_STEP - Q_REF;
 
@@ -30,15 +33,13 @@ start_time_penalty = t1; % Tijdslot wanneer penalty signaal verhoogd is
 
 Reduced_EU = 0; 
 Increased_EU = 0; 
-for i = 1:model.plant.ny
     for j = 1:size(FF)
-        if FF(i,j)<0
-            Reduced_EU = Reduced_EU + FF(i,j);
+        if FF(j)<0
+            Reduced_EU = Reduced_EU + FF(j);
         else
-            Increased_EU = Increased_EU + FF(i,j);
+            Increased_EU = Increased_EU + FF(j);
         end
     end
-end
 
 % --------------------------------------------------
 % Maximum power increase & Maximum power reduction
@@ -52,7 +53,7 @@ Max_power_red = min(FF,[],'all');
 % Duration of demand reduction  
 % ------------------------------- 
 
-[row_max_red, col_max_red] = find(FF == minValue);
+[col_max_red] = find(FF == minValue);
 t2 = col_max_red*Ts*60;
 alpha = t2 - t1; % Time until maximum reduction
 
@@ -62,7 +63,7 @@ alpha = t2 - t1; % Time until maximum reduction
 % Duration of anticipation
 %------------------------------------------------------
 
-[row_max_inc, col_max_inc] = find(FF == maxValue);
+[col_max_inc] = find(FF == maxValue);
 t3 = col_max_inc*Ts*60;
 gamma = t1 - t3; % Time between maximum power and step change penalty
 
