@@ -125,8 +125,9 @@ end
 
     %   -------------  OBJECTIVE FUNCTION  -------------
         %    % quadratic objective function withouth states constr.  penalisation
-                obj = obj + s(:,k)'*Qsb*s(:,k) + ...         %  comfort zone penalization
-                              uk'*Qu*uk;                              %  quadratic penalization of ctrl action move blocking formulation
+                
+    obj = obj + sum(Qsb*s(:,k),1) - ...        %  comfort zone penalization
+                              sum(Qu*uk,1);                            %  quadratic penalization of ctrl action move blocking formulation
     end
 
 
@@ -135,7 +136,7 @@ end
 
     %  optimizer options
     % options = sdpsettings('verbose', 1, 'warning', 1, 'beeponproblem', 1, 'solver','cplex');
-    options = sdpsettings('verbose', 1, 'solver','gurobi','gurobi.TimeLimit',5);
+    options = sdpsettings('verbose', 1, 'solver','gurobi','gurobi.TimeLimit',5); 
     
 %   worst case optimization cpu time -  max time limit for solver options.gurobi.TimeLimit
 % http://www.gurobi.com/documentation/7.5/refman/timelimit.html

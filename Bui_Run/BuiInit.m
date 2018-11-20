@@ -6,8 +6,10 @@
 % functionality intended for automatic construction of controls and
 % estimation for a given linear building model
 
+addpath(genpath('C:\Program Files\MATLAB\R2018b\YALMIP-master'))
 yalmip('clear');
 
+addpath C:\gurobi810\win64\matlab
 addpath('../Bui_Modeling/')
 addpath('../Bui_Disturbances/')
 addpath('../Bui_References/')
@@ -18,11 +20,11 @@ addpath('../Bui_Learn/')
 
 %% MODEL   emulator + predictor
 % available buildings  'Infrax',  'HollandschHuys', 'Reno', 'Old', 'RenoLight'
-buildingType = 'RenoLight';  ModelOrders.range = [4, 7, 10, 15, 20, 30, 40, 100];
+% buildingType = 'RenoLight';  ModelOrders.range = [4, 7, 10, 15, 20, 30, 40, 100];
 % buildingType = 'Infrax'; ModelOrders.range = [100, 200, 600]; 
-% buildingType = 'HollandschHuys'; ModelOrders.range = [100, 200, 600]; 
+buildingType = 'HollandschHuys'; ModelOrders.range = [100, 200, 600]; 
 % buildingType = 'Borehole';  ModelOrders.range = [10, 15, 20, 40, 100];  % orderds for borehole
-% ModelOrders.choice = 100; 
+%ModelOrders.choice = 100; 
 ModelOrders.choice = 'full';
 ModelOrders.off_free = 0;    %  augmented model
 reload = 0; 
@@ -56,7 +58,7 @@ ctrl = BuiCtrl(model, CtrlParam);
 
 %% Simulate
 SimParam.run.start = 1;
-SimParam.run.end = 13; 
+SimParam.run.end = 5; 
 SimParam.verbose = 1;
 SimParam.flagSave = 0;
 SimParam.comfortTol = 1e-1;
