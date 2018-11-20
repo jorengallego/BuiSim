@@ -5,6 +5,7 @@
 % Model Predictive Control (MPC)
 % functionality intended for automatic construction of controls and
 % estimation for a given linear building model
+% test
 
 addpath(genpath('C:\Program Files\MATLAB\R2018b\YALMIP-master'))
 yalmip('clear');
