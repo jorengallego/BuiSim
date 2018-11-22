@@ -25,8 +25,8 @@ addpath('../Bui_Learn/')
 % buildingType = 'Infrax'; ModelOrders.range = [100, 200, 600]; 
 % buildingType = 'HollandschHuys'; ModelOrders.range = [100, 200, 600]; 
 % buildingType = 'Borehole';  ModelOrders.range = [10, 15, 20, 40, 100];  % orderds for borehole
-%ModelOrders.choice = 100; 
-ModelOrders.choice = 'full';
+ModelOrders.choice = 100; 
+% ModelOrders.choice = 'full';
 ModelOrders.off_free = 0;    %  augmented model
 reload = 0; 
 
@@ -81,9 +81,4 @@ PlotParam.plotCtrl = 1;        % plot control
 
 % %  simulation file with embedded plotting file
 outdata = BuiSim(model, estim, ctrl, dist, refs, SimParam, PlotParam);
-
-
-
- 
- 
  
