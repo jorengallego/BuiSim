@@ -43,7 +43,7 @@ end
     u = sdpvar(nu, Nc, 'full'); % ctrl action - heat commanded by the thermostat [W]
     y = sdpvar(ny, N, 'full'); % output = indoor temperatures [degC]
     s = sdpvar(ny, N, 'full'); %  general slack
-    p = sdpvar(Nc, nu, 'full'); % price matrix
+    p = sdpvar(1, Nc, 'full'); % price matrix
     % % % above and below threshold -- dynamic comfort zone 
     wa_prev = sdpvar(ny, Nrp, 'full');
     wb_prev = sdpvar(ny, Nrp, 'full');
@@ -57,10 +57,10 @@ end
     %  objective function+ constraints init
     obj = 0;
     con = [];
-    p(1:5,:) = 1;
-    p(6:12,:) = 2;
-    p(13:Nc,:) = 1;
-%     p
+    p(:,1:5) = 1;
+    p(:,6:12) = 2;
+    p(:,13:Nc) = 1;
+     
 
 
     AB = zeros( nx , N*nu );
@@ -89,10 +89,10 @@ end
             % move blocking
         if k > Nc
             uk = u(:,Nc);
-            pk = p(Nc,:);
+            pk = p(:,Nc);
         else
             uk = u(:,k);
-            pk = p(k,:);
+            pk = p(:,k);
         end
 
 
@@ -135,7 +135,7 @@ end
         %    % quadratic objective function withouth states constr.  penalisation
                 
             obj = obj + s(:,k)'*Qsb*s(:,k) + ...         %  comfort zone penalization
-                              uk'*Qu*uk;                             %  quadratic penalization of ctrl action move blocking formulation
+                              uk'*Qu*uk*pk;                             %  quadratic penalization of ctrl action move blocking formulation
     end
 
 
