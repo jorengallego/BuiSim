@@ -10,7 +10,7 @@
 %    Jan/Bram/Anke/Alessia hoe dit praktisch kan) = Q_STEP
 
 load('output1.mat')
-Q_REF = sum(Hallo); % sum(A) telt alle kolomelementen van matrix A op resulterend in 1 rijmatrix
+Q_REF = sum(RefHeat); % sum(A) telt alle kolomelementen van matrix A op resulterend in 1 rijmatrix
 
 BuiInit
 
@@ -21,8 +21,15 @@ Q_STEP = sum(outdata.data.U);
 FF = Q_STEP - Q_REF;
 
 figure
+subplot(3,1,1); 
+plot(Q_REF);
+title('Reference heat demand', 'fontsize', 14)
+subplot(3,1,2); 
+plot(Q_STEP);
+title('Heating demand after step function', 'fontsize', 14)
+subplot(3,1,3);
 plot(FF);
-title('Flexibility Function');
+title('Flexibility Function', 'fontsize', 14);
 ylabel('Heat demand');
 xlabel('time');
 % 

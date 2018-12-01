@@ -21,12 +21,12 @@ addpath('../Bui_Learn/')
 
 %% MODEL   emulator + predictor
 % available buildings  'Infrax',  'HollandschHuys', 'Reno', 'Old', 'RenoLight'
- buildingType = 'RenoLight';  ModelOrders.range = [4, 7, 10, 15, 20, 30, 40, 100];
+%  buildingType = 'RenoLight';  ModelOrders.range = [4, 7, 10, 15, 20, 30, 40, 100];
 % buildingType = 'Infrax'; ModelOrders.range = [100, 200, 600]; 
-% buildingType = 'HollandschHuys'; ModelOrders.range = [100, 200, 600]; 
+buildingType = 'HollandschHuys'; ModelOrders.range = [100, 200, 600]; 
 % buildingType = 'Borehole';  ModelOrders.range = [10, 15, 20, 40, 100];  % orderds for borehole
-ModelOrders.choice = 100; 
-% ModelOrders.choice = 'full';
+% ModelOrders.choice = 100; 
+ModelOrders.choice = 'full';
 ModelOrders.off_free = 0;    %  augmented model
 reload = 0; 
 
@@ -71,8 +71,8 @@ SimParam.profile = 0;  % profiler function for CPU evaluation
 
 PlotParam.flagPlot = 1;     % plot 0 - no 1 - yes
 PlotParam.plotStates = 0;        % plot states
-PlotParam.plotDist = 1;        % plot disturbances
-PlotParam.plotEstim = 1;        % plot estimation
+PlotParam.plotDist = 0;        % plot disturbances
+PlotParam.plotEstim = 0;        % plot estimation
 PlotParam.plotCtrl = 1;        % plot control
 % PlotParam.Transitions = 1;      % pot dynamic transitions of Ax matrix
 % PlotParam.reduced = 0;   %  reduced paper plots formats 0 - no 1 - yes
