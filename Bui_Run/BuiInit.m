@@ -9,6 +9,7 @@
 
 addpath(genpath('C:\Program Files\MATLAB\R2018b\YALMIP-master'))
 yalmip('clear');
+close all
 
 addpath C:\gurobi810\win64\matlab
 addpath('../Bui_Modeling/')
@@ -18,6 +19,8 @@ addpath('../Bui_Estimation/')
 addpath('../Bui_Control/')
 addpath('../Bui_Simulation/')
 addpath('../Bui_Learn/')
+addpath('../Bui_RealTime/')
+addpath('../Bui_RealTime/MervisApp')
 
 %% MODEL   emulator + predictor
 % available buildings  'Infrax',  'HollandschHuys', 'Reno', 'Old', 'RenoLight'
@@ -32,11 +35,14 @@ reload = 0;
 
 model = BuiModel(buildingType, ModelOrders, reload);
 
-%% disturbacnes 
+%% Disturbacnes 
+% ambient temperature, solar radiation, internal heat gains
 dist = BuiDist(buildingType, reload);
 
 %% References 
-refs = BuiRefs(model);
+% comfort constraints, price profiles
+RefsParam.Price.variable = 1;       %1 =  variable price profile, 0 = fixed to 1
+refs = BuiRefs(model, RefsParam);
 
 %%  estimator 
 EstimParam.LOPP.use = 0;      %  Luenberger observer via pole placement - Not implemented
@@ -74,6 +80,7 @@ PlotParam.plotStates = 0;        % plot states
 PlotParam.plotDist = 0;        % plot disturbances
 PlotParam.plotEstim = 0;        % plot estimation
 PlotParam.plotCtrl = 1;        % plot control
+PlotParam.plotPrice = 1;        % plot price signal
 % PlotParam.Transitions = 1;      % pot dynamic transitions of Ax matrix
 % PlotParam.reduced = 0;   %  reduced paper plots formats 0 - no 1 - yes
 % PlotParam.zone = 2;     % choose zone if reduced

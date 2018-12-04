@@ -43,11 +43,12 @@ end
     u = sdpvar(nu, Nc, 'full'); % ctrl action - heat commanded by the thermostat [W]
     y = sdpvar(ny, N, 'full'); % output = indoor temperatures [degC]
     s = sdpvar(ny, N, 'full'); %  general slack
-    p = sdpvar(1, Nc, 'full'); % price matrix
-    % % % above and below threshold -- dynamic comfort zone 
+    % above and below threshold -- dynamic comfort zone 
     wa_prev = sdpvar(ny, Nrp, 'full');
     wb_prev = sdpvar(ny, Nrp, 'full');
-
+    % variable energy price profile
+    price = sdpvar(1, Nrp, 'full');
+    
     % weight diagonal matrices 
     Qsb = MPCParam.Qsb;
     Qsa = MPCParam.Qsa;
@@ -57,11 +58,6 @@ end
     %  objective function+ constraints init
     obj = 0;
     con = [];
-    p(:,1:5) = 1;
-    p(:,6:12) = 15;
-    p(:,13:Nc) = 1;
-     
-
 
     AB = zeros( nx , N*nu );
     AE = zeros( nx , N*nd );
@@ -77,22 +73,22 @@ end
             Dpreview = d_prev(:, k);
         end
 
-            % comfort zone preview 
+            % comfort zone and price preview 
         if k > Nrp
             wa = wa_prev(:,Nrp);
             wb = wb_prev(:,Nrp);
+            P = price(:,Nrp);
         else
             wa = wa_prev(:,k);
             wb = wb_prev(:,k);
+            P = price(:,k);
         end
 
             % move blocking
         if k > Nc
             uk = u(:,Nc);
-            pk = p(:,Nc);
         else
             uk = u(:,k);
-            pk = p(:,k);
         end
 
 
@@ -133,9 +129,8 @@ end
 
     %   -------------  OBJECTIVE FUNCTION  -------------
         %    % quadratic objective function withouth states constr.  penalisation
-                
-            obj = obj + s(:,k)'*Qsb*s(:,k) + ...         %  comfort zone penalization
-                              uk'*Qu*uk*pk;                             %  quadratic penalization of ctrl action move blocking formulation
+                obj = obj + s(:,k)'*Qsb*s(:,k) + ...         %  comfort zone penalization
+                              P*(uk'*Qu*uk);                              %  quadratic penalization of ctrl action move blocking formulation
     end
 
 
@@ -144,16 +139,18 @@ end
 
     %  optimizer options
     % options = sdpsettings('verbose', 1, 'warning', 1, 'beeponproblem', 1, 'solver','cplex');
-    options = sdpsettings('verbose', 1, 'solver','gurobi','gurobi.TimeLimit',5); 
+    options = sdpsettings('verbose', 1, 'solver','gurobi','gurobi.TimeLimit',5);
     
 %   worst case optimization cpu time -  max time limit for solver options.gurobi.TimeLimit
 % http://www.gurobi.com/documentation/7.5/refman/timelimit.html
 
     % optimizer for dynamic comfort zone
     if nd == 0  % no disturbances formulation
-        mpc = optimizer(con, obj, options,  { x(:, 1), wa_prev, wb_prev }, {u(:,1); obj} );
+        mpc = optimizer(con, obj, options,  { x(:, 1), wa_prev, wb_prev, price }, {u(:,1); obj} );
     else
-        mpc = optimizer(con, obj, options,  { x(:, 1), d_prev, wa_prev, wb_prev }, {u(:,1); obj} );
+        mpc = optimizer(con, obj, options,  { x(:, 1), d_prev, wa_prev, wb_prev, price }, {u(:,1); obj} );
     end
+    
+    
 
 end
