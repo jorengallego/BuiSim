@@ -9,29 +9,43 @@
 % 2) Run MPC  with step in price signal (nog bekijken met
 %    Jan/Bram/Anke/Alessia hoe dit praktisch kan) = Q_STEP
 
+% Load full reference profile of one year
 load('output1.mat')
-Q_REF = sum(RefHeat); % sum(A) telt alle kolomelementen van matrix A op resulterend in 1 rijmatrix
+Q_REF_Full = sum(RefHeat); % sum(A) telt alle kolomelementen van matrix A op resulterend in 1 rijmatrix
 
+% Load step response for desired amount of days
 BuiInit
 
+% Simulation parameters
+SimStart = outdata.SimParam.SimStart;
+SimStop = outdata.SimParam.SimStop;
+Nsim = outdata.SimParam.run.Nsim; 
 Ts = model.plant.Ts;
+Time = (1:Nsim)*outdata.model.plant.Ts/3600/24;
 
+% Reference profile and step response profile
+Q_REF = Q_REF_Full(SimStart:SimStop);
 Q_STEP = sum(outdata.data.U);
 
+% Flexibility Function
 FF = Q_STEP - Q_REF;
 
 figure
 subplot(3,1,1); 
-plot(Q_REF);
+plot(Time, Q_REF, 'linewidth', 2);
 title('Reference heat demand', 'fontsize', 14)
+xlabel('time [days]')
+ylabel('Heating power [W]')
 subplot(3,1,2); 
-plot(Q_STEP);
+plot(Time, Q_STEP, 'linewidth', 2);
 title('Heating demand after step function', 'fontsize', 14)
+xlabel('time [days]')
+ylabel('Heating power [W]')
 subplot(3,1,3);
-plot(FF);
+plot(Time, FF, 'linewidth', 2);
 title('Flexibility Function', 'fontsize', 14);
-ylabel('Heat demand');
-xlabel('time');
+xlabel('time [days]')
+ylabel('Heating power [W]')
 % 
 % start_time_penalty = t1; % Tijdslot wanneer penalty signaal verhoogd is
 % 

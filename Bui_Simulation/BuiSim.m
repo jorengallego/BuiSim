@@ -565,7 +565,8 @@ outdata.ctrl = ctrl;      %  controller
 % outdata.dist = refs;      %  references
 outdata.SimParam = SimParam;        %  simulation parameters
 outdata.SimParam.run.Nsim = Nsim;    % sim steps
-
+outdata.SimParam.SimStart = SimStart;
+outdata.SimParam.SimStop = SimStop;
 % plant simulation data 
 outdata.data.X = X;         %  state vector
 outdata.data.Y = Y;         %  output vector
