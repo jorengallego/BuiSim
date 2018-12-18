@@ -10,7 +10,7 @@
 %    Jan/Bram/Anke/Alessia hoe dit praktisch kan) = Q_STEP
 
 % Load full reference profile of one year
-load('output1.mat')
+load('outputOld.mat')
 Q_REF_Full = sum(RefHeat); % sum(A) telt alle kolomelementen van matrix A op resulterend in 1 rijmatrix
 
 % Load step response for desired amount of days
@@ -36,16 +36,19 @@ plot(Time, Q_REF, 'linewidth', 2);
 title('Reference heat demand', 'fontsize', 14)
 xlabel('time [days]')
 ylabel('Heating power [W]')
+grid on
 subplot(3,1,2); 
 plot(Time, Q_STEP, 'linewidth', 2);
 title('Heating demand after step function', 'fontsize', 14)
 xlabel('time [days]')
 ylabel('Heating power [W]')
+grid on
 subplot(3,1,3);
 plot(Time, FF, 'linewidth', 2);
 title('Flexibility Function', 'fontsize', 14);
 xlabel('time [days]')
 ylabel('Heating power [W]')
+grid on
 % 
 % start_time_penalty = t1; % Tijdslot wanneer penalty signaal verhoogd is
 % 
@@ -58,15 +61,16 @@ Reduced_EU = 0;
 Increased_EU = 0; 
     for j = 1:c
         if FF(j)<0
-            Reduced_EU = Reduced_EU + FF(j);
+            Reduced_EU = Reduced_EU + FF(j)*900/(3.6*10^6);
             %disp(Reduced_EU)
         else
-            Increased_EU = Increased_EU + FF(j);
+            Increased_EU = Increased_EU + FF(j)*900/(3.6*10^6);
             %disp(Increased_EU)
         end
     end
-fprintf('Reduced energy use: %.2f kWh\n', Reduced_EU)
+
 fprintf('Increased energy use : %.2f kWh\n', Increased_EU)
+fprintf('Reduced energy use: %.2f kWh\n', Reduced_EU)
 
 % % --------------------------------------------------
 % % Maximum power increase & Maximum power reduction
@@ -75,8 +79,8 @@ fprintf('Increased energy use : %.2f kWh\n', Increased_EU)
 Max_power_red = min(FF,[],'all');
 Max_power_inc = max(FF,[],'all');    
  
-fprintf('Maximum power reduction : %.2f kWh\n', Max_power_red)
-fprintf('Maximum power increase: %.2f kWh\n', Max_power_inc)
+fprintf('Maximum power increase: %.2f W\n', Max_power_inc)
+fprintf('Maximum power reduction : %.2f W\n', Max_power_red)
 
 % % ------------------------------- 
 % % Time until maximum reduction   
