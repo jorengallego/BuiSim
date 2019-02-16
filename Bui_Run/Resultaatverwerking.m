@@ -11,6 +11,7 @@ ylabel('Energy flexibility [kWh]')
 title('Energy flexibility with Increasing price step (01/01 – 02/01)')
 hold on 
 plot (x,y2, 'linewidth', 2)
+legend({'Increased energy use','reduced energy use'}, 'Location', 'northwest')
 
 figure
 plot(x,y3, 'linewidth', 2)
@@ -19,3 +20,4 @@ ylabel('Power flexibility [W]')
 title('Power flexibility with Increasing price step (01/01 – 02/01)')
 hold on 
 plot (x,y4,'linewidth', 2)
+legend({'Maximum power increase','Maximum power reduction'}, 'Location', 'northwest')

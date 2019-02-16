@@ -32,6 +32,34 @@ fprintf('*** Load references ... \n')
 % function eval for full year comfort boundaries profiles in K
 [t_comf, TLow, TUp, TSup, TRefControl] = comfortTemperature(bui_path);
 
+%Zelfgeschreven functie om comfort boundaries makkelijker te kunnen
+%aanpassen:
+TLow = zeros(35224,1);
+for k = 0:366
+    for i = 1:33
+        TLow((k*96)+i)= 290.15;
+    end
+    for i = 34:93
+        TLow((k*96)+i) = 293.15;
+    end
+    for i = 94:96
+        TLow((k*96)+i) = 290.15;
+    end
+end
+
+TUp = zeros(35224,1);
+for k = 0:366
+    for i = 1:33
+        TUp((k*96)+i)= 299.15;
+    end
+    for i = 34:93
+        TUp((k*96)+i) = 296.15;
+    end
+    for i = 94:96
+        TUp((k*96)+i) = 299.15;
+    end
+end
+
 % % visualisation of comfort constraints and reference
 % plot(t_comf,[TLow, TUp, TLow+(TUp-TLow)/2])
 % legend('TLow','TUp','ref')

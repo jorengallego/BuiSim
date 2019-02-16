@@ -24,7 +24,7 @@ addpath('../Bui_RealTime/MervisApp')
 
 %% MODEL   emulator + predictor
 % available buildings  'Infrax',  'HollandschHuys', 'Reno', 'Old', 'RenoLight'
-buildingType = 'Old';  ModelOrders.range = [4, 7, 10, 15, 20, 30, 40, 100];
+buildingType = 'Reno';  ModelOrders.range = [4, 7, 10, 15, 20, 30, 40, 100];
 % buildingType = 'Infrax'; ModelOrders.range = [100, 200, 600]; 
 % buildingType = 'HollandschHuys'; ModelOrders.range = [100, 200, 600]; 
 % buildingType = 'Borehole';  ModelOrders.range = [10, 15, 20, 40, 100];  % orderds for borehole
@@ -64,8 +64,8 @@ CtrlParam.PID.use = 0;
 ctrl = BuiCtrl(model, CtrlParam);
 
 %% Simulate
-SimParam.run.start = 1;
-SimParam.run.end = 2; 
+SimParam.run.start = 180;
+SimParam.run.end = 200; 
 SimParam.verbose = 1;
 SimParam.flagSave = 0;
 SimParam.comfortTol = 1e-1;
