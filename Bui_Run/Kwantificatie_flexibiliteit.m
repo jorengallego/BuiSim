@@ -105,3 +105,6 @@ fprintf('Maximum power reduction : %.2f W\n', Max_power_red)
 % %%% Methode Reynders %%%
 % %%%%%%%%%%%%%%%%%%%%%%%%
 
+% Available storage capacity
+
+

@@ -488,16 +488,31 @@ if  ctrl.use
     Ucool = U(U<0);
     Qheat = 1;   % heat coefficient
     Qcool = 1;   % cool coefficient
+    COP = refs.COP;
+    E = U/COP;
+    Eheat = E(E>0);
+    Ecool  = E(E<0);
+   
     %  ENERGY COSTS for individudal inputs
         for j = 1:model.plant.ny
             outdata.info.HeatingCost(j) = sum(Qheat*Uheat(j:model.plant.ny:size(Uheat,1)))*Ts/1000/3600;       % heating cost [kW hours]
             outdata.info.CoolingCost(j) = sum(abs(Qcool*Ucool(j:model.plant.ny:size(Ucool,1))))*Ts/1000/3600;  % cooling cost [kW hours]
             outdata.info.TotalCost(j) = outdata.info.HeatingCost(j)+outdata.info.CoolingCost(j);             % total cost [kW hours]
         end
+    % ELECTRICITY COSTS for individual inputs
+        for j = 1:model.plant.ny
+            outdata.info.HeatingElectricityCost(j) = sum(Qheat*Eheat(j:model.plant.ny:size(Eheat,1)))*Ts/1000/3600;       % heating electricity cost [kW hours]
+            outdata.info.CoolingElectricityCost(j) = sum(abs(Qcool*Ecool(j:model.plant.ny:size(Ecool,1))))*Ts/1000/3600;  % cooling cost electricity [kW hours]
+            outdata.info.TotalElectricityCost(j) = outdata.info.HeatingElectricityCost(j)+outdata.info.CoolingElectricityCost(j);  % total cost electricity[kW hours]
+        end
     % Overall ENERGY COST
     outdata.info.OverallHeatingCost = sum(outdata.info.HeatingCost);                           % heating cost [kW hours]
     outdata.info.OverallCoolingCost = sum(outdata.info.CoolingCost);                           % cooling cost [kW hours]
     outdata.info.OverallTotalCost = sum(outdata.info.OverallHeatingCost)+sum(outdata.info.OverallCoolingCost);     % total cost [kW hours]
+    % Overall ELECTRICITY COST
+    outdata.info.OverallHeatingElectricityCost = sum(outdata.info.HeatingElectricityCost);                           % heating cost [kW hours]
+    outdata.info.OverallCoolingElectricityCost = sum(outdata.info.CoolingElectricityCost);                           % cooling cost [kW hours]
+    outdata.info.OverallTotalElectricityCost = sum(outdata.info.OverallHeatingElectricityCost)+sum(outdata.info.OverallCoolingElectricityCost);     % total cost [kW hours]
 end
 
 % ------------ COMFORT -----------------
@@ -570,7 +585,8 @@ outdata.SimParam.SimStop = SimStop;
 % plant simulation data 
 outdata.data.X = X;         %  state vector
 outdata.data.Y = Y;         %  output vector
-outdata.data.U = U;         %  input vector
+outdata.data.U = U;         %  input vector (Energy)
+outdata.data.E = E;         %  input vector (Electricity)
 outdata.data.D = D;         %  disturbance vector
 
 % estimator data
@@ -613,7 +629,7 @@ if ctrl.use
     
 %     Price signal
     outdata.data.Price = Price(:,1:end-Nrp);       
-    outdata.data.Cost = Price(:,1:end-Nrp).*U;   
+    outdata.data.Cost = Price(:,1:end-Nrp).*E;   
     
 %     if ctrl.MPC.use
 %         % obj function
@@ -639,6 +655,10 @@ if SimParam.verbose
         fprintf('          Heating cost: %.2f kWh\n', outdata.info.OverallHeatingCost);
         fprintf('          Cooling cost: %.2f kWh\n', outdata.info.OverallCoolingCost);
         fprintf('            Total cost: %.2f kWh\n', outdata.info.OverallTotalCost);
+        %  electricity cost
+        fprintf('          Heating Electricity cost: %.2f kWh\n', outdata.info.OverallHeatingElectricityCost);
+        fprintf('          Cooling Electricity cost: %.2f kWh\n', outdata.info.OverallCoolingElectricityCost);
+        fprintf('            Total Electricity cost: %.2f kWh\n', outdata.info.OverallTotalElectricityCost);
         fprintf('               Comfort: %.2f Kh\n',  outdata.info.Overall_Kh);
         fprintf('        PMV violations: %.2f \n', outdata.info.Overall_PMV_TVS);
     end

@@ -64,8 +64,8 @@ CtrlParam.PID.use = 0;
 ctrl = BuiCtrl(model, CtrlParam);
 
 %% Simulate
-SimParam.run.start = 180;
-SimParam.run.end = 200; 
+SimParam.run.start = 1;
+SimParam.run.end = 2; 
 SimParam.verbose = 1;
 SimParam.flagSave = 0;
 SimParam.comfortTol = 1e-1;

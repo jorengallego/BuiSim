@@ -34,31 +34,21 @@ fprintf('*** Load references ... \n')
 
 %Zelfgeschreven functie om comfort boundaries makkelijker te kunnen
 %aanpassen:
-TLow = zeros(35224,1);
 for k = 0:366
     for i = 1:33
         TLow((k*96)+i)= 290.15;
-    end
-    for i = 34:93
-        TLow((k*96)+i) = 293.15;
-    end
-    for i = 94:96
-        TLow((k*96)+i) = 290.15;
-    end
-end
-
-TUp = zeros(35224,1);
-for k = 0:366
-    for i = 1:33
         TUp((k*96)+i)= 299.15;
     end
     for i = 34:93
+        TLow((k*96)+i) = 293.15;
         TUp((k*96)+i) = 296.15;
     end
     for i = 94:96
+        TLow((k*96)+i) = 290.15;
         TUp((k*96)+i) = 299.15;
     end
 end
+
 
 % % visualisation of comfort constraints and reference
 % plot(t_comf,[TLow, TUp, TLow+(TUp-TLow)/2])
@@ -81,12 +71,19 @@ references.TSup = TSup;   % supply water temperature from HC
 %% variable price profiles
 if RefsParam.Price.variable
 %    references.Price = 1+sin(0.01*(1:length(TLow)))'; % variable price profile
-   references.Price = 1 + 8*heaviside((1:length(TLow))-(((190*24)+12)*4))'; %((#days*24hours) + statpoint step) * #quarters in 1 hour
+   references.Price = 1 + 8*heaviside((1:length(TLow))-(((187*24)+12)*4))'; %((#days*24hours) + statpoint step) * #quarters in 1 hour
 %    TODO:  load price profile interface
 else
    references.Price = ones(size(TLow));  % standard fixed price 
 end
 
+%% COP Heat pump
+
+% Constant COP
+
+references.COP = 3;
+
+% Time varying COP
 
 fprintf('*** Done.\n')
 end

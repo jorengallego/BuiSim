@@ -254,7 +254,7 @@ if PlotParam.plotPrice
 %     price profile
     subplot(3, 1, 1); 
     plot(Time, outdata.data.Price, 'linewidth', 2);
-    title('Energy Price Profile');
+    title('Electricity Price Profile');
     axis tight
     grid on
     ylabel('Price [Euro/kW]')
@@ -262,14 +262,14 @@ if PlotParam.plotPrice
 %   Cost = price * energy consumed
     subplot(3, 1, 2); 
     stairs(Time, outdata.data.Cost', 'linewidth', 2);
-    title('Energy Cost per Heat Flow');
+    title('Electricity Cost per Heat Flow');
     axis tight
     grid on
     ylabel('Cost [Euro]')
     xlabel('time [days]')
     subplot(3, 1, 3); 
     stairs(Time, sum(outdata.data.Cost), 'linewidth', 2);
-    title('Total Energy Cost');
+    title('Total Electricity Cost');
     axis tight
     grid on
     ylabel('Cost [Euro]')
