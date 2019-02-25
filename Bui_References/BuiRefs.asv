@@ -72,7 +72,7 @@ references.TSup = TSup;   % supply water temperature from HC
 Ts = model.plant.Ts;
 if RefsParam.Price.variable
 %    references.Price = 1+sin(0.01*(1:length(TLow)))'; % variable price profile
-   references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(TLow))-(((187*24)+12)*4))'; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+   references.EnergyPrice = 1 + 8*heaviside((1:length(TLow))-(((187*24)+12)*4))'; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
    references.Price = references.EnergyPrice*Ts/3600/1000; % [€/kW]
 %    TODO:  load price profile interface
 else

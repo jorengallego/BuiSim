@@ -253,11 +253,11 @@ if PlotParam.plotPrice
     figure
 %     price profile
     subplot(3, 1, 1); 
-    plot(Time, outdata.data.Price, 'linewidth', 2);
+    plot(Time, outdata.data.EnergyPrice, 'linewidth', 2);
     title('Electricity Price Profile');
     axis tight
     grid on
-    ylabel('Price [Euro/kW]')
+    ylabel('Price [Euro/kWh]')
     xlabel('time [days]')
 %   Cost = price * energy consumed
     subplot(3, 1, 2); 

@@ -114,8 +114,8 @@ else   % initialize matrices for closed loop control simulations
     PMVub = refs.PMVub(SimStart:SimStop);
     PMVlb = refs.PMVlb(SimStart:SimStop);
     % ------ energy price ------
-    Price = refs.Price(SimStart:SimStop+N,:)'; % /W
-    EnergyPrice = refs.EnergyPrice(SimStart:SimStop+N,:)'; % /kWh
+    Price = refs.Price(SimStart:SimStop+N,:)';
+    EnergyPrice = refs.EnergyPrice(SimStart:SimStop+N,:)';
 
     if ctrl.RBC.use
         % supply water temperature
@@ -629,8 +629,7 @@ if ctrl.use
 %     outdata.data.PMV_V = PMVViol;
     
 %     Price signal
-    outdata.data.Price = Price(:,1:end-Nrp);
-    outdata.data.EnergyPrice = EnergyPrice(:,1:end-Nrp);
+    outdata.data.Price = Price(:,1:end-Nrp);       
     outdata.data.Cost = Price(:,1:end-Nrp).*E;   
     
 %     if ctrl.MPC.use
