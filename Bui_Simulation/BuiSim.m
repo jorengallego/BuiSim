@@ -489,8 +489,8 @@ if  ctrl.use
     Ucool = U(U<0);
     Qheat = 1;   % heat coefficient
     Qcool = 1;   % cool coefficient
-    COP = refs.COP;
-    E = U/COP;
+    COP = refs.COP(SimStart:SimStop,:);
+    E = U./COP;
     Eheat = E(E>0);
     Ecool  = E(E<0);
    
@@ -632,7 +632,8 @@ if ctrl.use
     outdata.data.Price = Price(:,1:end-Nrp);
     outdata.data.EnergyPrice = EnergyPrice(:,1:end-Nrp);
     outdata.data.Cost = Price(:,1:end-Nrp).*E;   
-    
+%     COP
+    outdata.data.COP = COP;
 %     if ctrl.MPC.use
 %         % obj function
 %         outdata.data.J = J;

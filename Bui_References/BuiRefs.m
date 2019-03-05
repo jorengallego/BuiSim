@@ -48,7 +48,8 @@ for k = 0:366
         TUp((k*96)+i) = 299.15;
     end
 end
-
+TLow = TLow(1:35224);
+TUp = TUp(1:35224);
 
 % % visualisation of comfort constraints and reference
 % plot(t_comf,[TLow, TUp, TLow+(TUp-TLow)/2])
@@ -72,7 +73,8 @@ references.TSup = TSup;   % supply water temperature from HC
 Ts = model.plant.Ts;
 if RefsParam.Price.variable
 %    references.Price = 1+sin(0.01*(1:length(TLow)))'; % variable price profile
-   references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(TLow))-(((187*24)+12)*4))'; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+   references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(TLow))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(TLow))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+   %references.EnergyPrice = rectangularPulse(2,3,1:length(TLow));
    references.Price = references.EnergyPrice*Ts/3600/1000; % [€/kW]
 %    TODO:  load price profile interface
 else
@@ -86,6 +88,12 @@ end
 references.COP = 3;
 
 % Time varying COP
+
+TSource = 273.5 + 15;
+references.COP = zeros(size(TSup,1),model.pred.ny);
+for i = 1:model.pred.ny
+    references.COP(:,i) = 0.45*(TSup./(TSup - TSource + 10));
+end
 
 fprintf('*** Done.\n')
 end

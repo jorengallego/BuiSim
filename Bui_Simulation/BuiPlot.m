@@ -259,15 +259,22 @@ if PlotParam.plotPrice
     grid on
     ylabel('Price [Euro/kWh]')
     xlabel('time [days]')
-%   Cost = price * energy consumed
     subplot(3, 1, 2); 
+    plot(Time, outdata.data.COP, 'linewidth', 2);
+    title('COP');
+    axis tight
+    grid on
+    ylabel('COP [-]')
+    xlabel('time [days]')
+%   Cost = price * energy consumed
+    subplot(3, 1, 3); 
     stairs(Time, outdata.data.Cost', 'linewidth', 2);
     title('Electricity Cost per Heat Flow');
     axis tight
     grid on
     ylabel('Cost [Euro]')
     xlabel('time [days]')
-    subplot(3, 1, 3); 
+    subplot(3, 1, 4); 
     stairs(Time, sum(outdata.data.Cost), 'linewidth', 2);
     title('Total Electricity Cost');
     axis tight
