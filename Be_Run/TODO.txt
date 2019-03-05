@@ -1,0 +1,164 @@
+
+
+
+
+
+% TODO long term:
+% API for end user
+% communication with BMS integrate
+% code generation integrate, so implementation is matlab free and matlab is
+% used only during design phase
+
+
+-------------------------------------
+%% MODEL   emulator + predictor
+% TODO:
+% HVAC time delays modeling and incporporation into prediction model
+% TODO: issue with low order??
+
+% TODO: missing disturbance file for borehole large file on github
+
+% == Option 2: load custom model     %%%% TODO  %%%%
+% buildingType = 'Load'
+
+coupling with other toolboxes for automated model generation from data
+Gauss process for matlab
+BRCM
+System identification
+
+-------------------------------------
+%% Constraints
+% TODO: state, input, algebraic equations...
+% const = BuiConstraints(model,ConstrParam)
+
+-------------------------------------
+%% disturbacnes 
+% TODO: HH buidling mismatch in Ed matrix and d0
+
+% =========== 1, choose disturbances =================
+% == Option 1: load custom data    %%%% TODO  %%%%
+% == Option 2: select from library of available models   %%%% TODO  %%%%
+
+-------------------------------------
+%% References 
+% TODO:  fix to be universal for all models, add multiple options
+% TODO: error with the path to common files - fix that
+% TODO: works only with Reno, adapt to Infrax
+
+-------------------------------------
+%%  estimator 
+% TODO: flag for using estimation, if not use perfect state update from plant model
+
+EstimParam.LOPP.use = 0;         %  Luenberger observer via pole placement - Not implemented
+
+-------------------------------------
+%% controller 
+
+% TODO: error with the path to common files - fix that
+% TODO: flag for controller use, if not perform open loop simulations 
+
+% TODO: finish implementation of RBC, MPC, PID, ML
+
+% TODO higher level tuning params
+% PID coefficients
+% MPC - just magnutide of weight on comfort and energy 
+
+% if CtrlParam.RBC.use
+%     % TODO: mismatch with ny and nu for RBC!!!
+%     % TODO: implement this sythematically
+%     ctrl.umax = 2000*ones(model.pred.nu,1);
+%     ctrl.umax(1:4) = 10;
+%     ctrl.umax(25:28) = 0;
+%     ctrl.umax([17,16,8,5,11,12]) = 0;
+% 
+%     ctrl.umin = -2000*ones(model.pred.nu,1);
+%     ctrl.umax(1:4) = -5;
+%     ctrl.uin(25:28) = 0;
+%     ctrl.umin([17,16,8,5,11,12]) = 0;
+% end
+
+% TODO:
+% implement different levels control
+% primary slow control RBC - floors TABS inputs
+% secondary fast control RBC - room temperatures direct feedback
+% VAVs
+
+% TODO RBC:
+% implement heating curve for supply water temp for infrax for RBC
+% ctrl and move it to the control block
+% identify ambient temp signal from outside and based on that compute T sup
+
+% TODO
+% implement original RBC for each model as a part of the model itself
+% instead of that implement generic Model structures for development
+
+
+
+
+-------------------------------------
+%% Simulate
+%TODO: add open loop (fast results), closed loop (RHC) - done 
+% TODO: modify plot option in BuiSim init
+% TODO: embedd profiles into BuiSim with flag option
+
+
+% TODO: wrap simulation and measurement in standalone function with standardized interface
+
+% TODO: Emulator dymola co-simulation
+
+
+-------------------------------------
+%% Control action post-processing
+% TODO - heat flows to valve positions
+
+% Q = m*cp*p*(T_sup - T_return)
+% Q - 12 heat flows to zones computed by MPC
+% m - prescribed nominal mass flow
+% cp - thermal capcity of the water known
+% p - all valve postition in pipe system to be computed by post-processing
+% T_sup - supply water temperature to be measured
+% T_return - return temperature to be measured
+% % ALARM - CVUT used instead of T_return, T_concrete - why?
+
+% 1, select only heat flows to zones as controls
+% 2, compute necessary mass flows to individual zones based on given measurements
+% 3, compute valve positions based on the mass balance of flows in whole pipe system  
+% 4, consider variable mass flow rates
+% 5, automate the process based on pipe topology
+
+% problem: control input mismatch and measurements accuracy - minimized by
+% extra state observer or lower level controller?
+
+
+
+-------------------------------------
+MACHINE LEARNING
+% TODO:
+% 1, structure
+% 2, training data processing - outdata
+% 3, selection of ML model: MLagent = BuiMLAgent(MLParam,outdata)
+% 4, automated feature selection for given model via: traindata = BuiFeatures(MLagent,outdata)
+% 5, automated training via MLagent = BuiLearn(MLAgent,traindata)
+% 6, simulation with MLagent: outdata = BuiSim(model, estim, MLagent, dist, refs, SimParam, PlotParam);
+
+
+Features
+% 1, feature selection - OK
+% 2, feature transformations
+% TODO: elimination of state variables
+
+
+% TODO training
+% TrainParam ???
+
+
+% TODO simulation:
+% standalone evaluation function for each MLagent 
+% automatic feature selection from measurements and d predictions 
+
+
+%                     TODO: automatic generation of feature index -
+%                     standardized format
+%                     Features = [y_past, yn; Dpreview; wb_prev];                   
+%                     FeaturesTS = con2seq(Features);  
+%                     
