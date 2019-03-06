@@ -92,9 +92,9 @@ outdata = BeSim(model, estim, ctrl, dist, refs, SimParam);
 
 %% Plot Results
 PlotParam.flagPlot = 1;     % plot 0 - no 1 - yes
-PlotParam.plotStates = 1;        % plot states
-PlotParam.plotDist = 1;        % plot disturbances
-PlotParam.plotEstim = 1;        % plot estimation
+PlotParam.plotStates = 0;        % plot states
+PlotParam.plotDist = 0;        % plot disturbances
+PlotParam.plotEstim = 0;        % plot estimation
 PlotParam.plotCtrl = 1;        % plot control
 PlotParam.plotPrice = 1;        % plot price signal
 % PlotParam.Transitions = 1;      % pot dynamic transitions of Ax matrix

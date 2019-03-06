@@ -111,13 +111,30 @@ if  strcmp(model.buildingType,'HollandschHuys')
 
 
     %% variable price profiles
+    Ts = model.plant.Ts;
     if RefsParam.Price.variable
-       references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-    %    references.Price = time_series;
+%        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
+       references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(WB))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+%        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
+       references.Price = references.EnergyPrice*Ts/3600/1000; % [€/kW]
     %    TODO:  load price profile interface
     else
        references.Price = ones(size(WB));  % standard fixed price 
     end
+    
+    %% COP Heat pump
+
+    % Constant COP
+
+    references.COP = 3;
+
+    % Time varying COP
+
+%     TSource = 273.5 + 15;
+%     references.COP = zeros(size(TSup,1),model.pred.ny);
+%     for i = 1:model.pred.ny
+%         references.COP(:,i) = 0.45*(TSup./(TSup - TSource + 10));
+%     end
 
 else
     %% comfort boundaries
@@ -143,12 +160,30 @@ else
     references.TSup = TSup;   % supply water temperature from HC
 
     %% variable price profiles
+    Ts = model.plant.Ts;
     if RefsParam.Price.variable
-       references.Price = 1+sin(0.01*(1:length(TLow)))'; % variable price profile
-    %    references.Price = time_series;
+    %    references.Price = 1+sin(0.01*(1:length(TLow)))'; % variable price profile
+       references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(TLow))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(TLow))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+       %references.EnergyPrice = rectangularPulse(2,3,1:length(TLow));
+       references.Price = references.EnergyPrice*Ts/3600/1000; % [€/kW]
     %    TODO:  load price profile interface
     else
        references.Price = ones(size(TLow));  % standard fixed price 
+    end
+
+    
+    %% COP Heat pump
+
+    % Constant COP
+
+%     references.COP = 3;
+
+    % Time varying COP
+
+    TSource = 273.5 + 15;
+    references.COP = zeros(size(TSup,1),model.pred.ny);
+    for i = 1:model.pred.ny
+        references.COP(:,i) = 0.45*(TSup./(TSup - TSource + 10));
     end
 end
 
