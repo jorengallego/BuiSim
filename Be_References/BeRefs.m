@@ -30,7 +30,7 @@ if  strcmp(model.buildingType,'HollandschHuys')
     %% cofort zone based on standards ISO7730 and EN15251
     % for more details see Damians PhD page 168
 
-    % Te(i)  - amient temperature at timestep i
+    % Te(i)  - ambient temperature at timestep i
     Te_index = 212;    % TODO: generalize ambient temperature indexing for all models in BuiSim
     Te = dist.d(:,Te_index) - 273.15;
     day_steps = 86400/model.pred.Ts;     % number of steps per day,  24h = 86400 sec
@@ -114,12 +114,13 @@ if  strcmp(model.buildingType,'HollandschHuys')
     Ts = model.plant.Ts;
     if RefsParam.Price.variable
 %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-       references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(WB))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+       references.EnergyPrice = 0.25 + 0*heaviside((1:length(WB))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
 %        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
-       references.Price = references.EnergyPrice*Ts/3600/1000; % [€/kW]
+       references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
     %    TODO:  load price profile interface
     else
        references.Price = ones(size(WB));  % standard fixed price 
+       % references.EnergyPrice = ones(size(WB));
     end
     
     %% COP Heat pump
@@ -135,6 +136,7 @@ if  strcmp(model.buildingType,'HollandschHuys')
 %     for i = 1:model.pred.ny
 %         references.COP(:,i) = 0.45*(TSup./(TSup - TSource + 10));
 %     end
+%     references.COP = references.COP';
 
 else
     %% comfort boundaries
@@ -147,6 +149,23 @@ else
     % figure
     % plot(t_comf,TSup)
     % legend('supply watter')
+    
+    for k = 0:366
+        for i = 1:33
+            TLow((k*96)+i)= 290.15;
+            TUp((k*96)+i)= 299.15;
+        end
+        for i = 34:93
+            TLow((k*96)+i) = 293.15;
+            TUp((k*96)+i) = 296.15;
+        end
+        for i = 94:96
+            TLow((k*96)+i) = 290.15;
+            TUp((k*96)+i) = 299.15;
+        end
+    end
+    TLow = TLow(1:35224,:);
+    TUp = TUp(1:35224,:);
 
     references.R = (TLow+(TUp-TLow)/2)*ones(1,model.pred.ny);  % setpoint in K
     % references.ref = (TRefControl+2.5)*ones(1,model.pred.ny);  % setpoint in K
@@ -165,10 +184,11 @@ else
     %    references.Price = 1+sin(0.01*(1:length(TLow)))'; % variable price profile
        references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(TLow))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(TLow))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
        %references.EnergyPrice = rectangularPulse(2,3,1:length(TLow));
-       references.Price = references.EnergyPrice*Ts/3600/1000; % [€/kW]
+       references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
     %    TODO:  load price profile interface
     else
        references.Price = ones(size(TLow));  % standard fixed price 
+       % references.EnergyPrice = ones(size(TLow));
     end
 
     
@@ -185,6 +205,7 @@ else
     for i = 1:model.pred.ny
         references.COP(:,i) = 0.45*(TSup./(TSup - TSource + 10));
     end
+    references.COP = references.COP';
 end
 
 fprintf('*** Done.\n')

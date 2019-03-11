@@ -16,7 +16,7 @@ Q_REF_Full_Electricity = sum(RefElectricity);
 
 
 % Load step response for desired amount of days
-BuiInit
+BeInit
 
 % Simulation parameters
 SimStart = outdata.SimParam.SimStart;

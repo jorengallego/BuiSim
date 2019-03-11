@@ -20,7 +20,7 @@ Time = (1:Nsim)*outdata.model.plant.Ts/3600/24;
 
 Q_REF = Q_REF_Full(SimStart:SimStop);
 Q_ADR = sum(outdata.data.U); 
-Q_verschil_ADR = Q_ADR - Q_REF; % Intervallen nog aanpassen (deze berekening moet maar gaan voor l_ADR
+Q_verschil_ADR = Q_ADR - Q_REF; % Intervallen nog aanpassen (deze berekening moet maar gaan voor l_ADR)
 Q_verschil_TOT = Q_ADR - Q_REF;
 
 %% Available storage capacity

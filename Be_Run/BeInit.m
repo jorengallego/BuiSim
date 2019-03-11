@@ -7,9 +7,10 @@
 % estimation for a given linear building model
 
 clear
+addpath(genpath('C:\Program Files\MATLAB\R2018b\YALMIP-master'))
 yalmip('clear');
 % close all
-
+addpath C:\gurobi810\win64\matlab
 addpath('../Be_Modeling/')
 addpath('../Be_Disturbances/')
 addpath('../Be_References/')
@@ -37,7 +38,7 @@ addpath('../Be_Learn/')
 % model = BeModel(buildingType, ModelParam);
 
 % =========== particular example =================
-% buildingType = 'Reno';  ModelParam.Orders.range = [4, 7, 10, 15, 20, 30, 40, 100];
+% buildingType = 'Old';  ModelParam.Orders.range = [4, 7, 10, 15, 20, 30, 40, 100];
 buildingType = 'HollandschHuys'; ModelParam.Orders.range = [100, 200, 600]; 
 ModelParam.Orders.choice = 'full';
 ModelParam.Orders.off_free = 0;    
@@ -54,7 +55,7 @@ dist = BeDist(model, DistParam);        % construct a disturbances object
 
 %% References 
 % comfort constraints, price profiles
-RefsParam.Price.variable = 0;       %1 =  variable price profile, 0 = fixed to 1
+RefsParam.Price.variable = 1;       %1 =  variable price profile, 0 = fixed to 1
 
 refs = BeRefs(model, dist, RefsParam);     % construct a references object  
 
@@ -79,7 +80,7 @@ ctrl = BeCtrl(model, CtrlParam);       % construct a controller object
 
 %% Simulate
 SimParam.run.start = 1;
-SimParam.run.end = 7; 
+SimParam.run.end = 4; 
 SimParam.verbose = 1;
 SimParam.flagSave = 0;
 SimParam.comfortTol = 1e-1;

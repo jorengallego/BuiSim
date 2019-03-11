@@ -494,7 +494,8 @@ if  ctrl.use
     Ucool = U(U<0);
     Qheat = 1;   % heat coefficient
     Qcool = 1;   % cool coefficient
-    COP = refs.COP(SimStart:SimStop,:);
+    COP = refs.COP; % te gebruiken indien constante COP
+    %COP = refs.COP(:,SimStart:SimStop); % te gebruiken indien variabale COP
     E = U./COP;
     Eheat = E(E>0);
     Ecool  = E(E<0);
