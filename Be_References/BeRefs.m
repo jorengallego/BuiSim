@@ -19,8 +19,8 @@ if strcmp(model.buildingType,'Infrax')
    model.buildingType = 'Reno';
 end
   
-
-bui_path = ['../buildings/', model.buildingType, '/disturbances/'];
+bui_path = ['C:\Users\Joren\Documents\BeSim\buildings\', model.buildingType, '/disturbances/'];
+% bui_path = ['../buildings/', model.buildingType, '/disturbances/'];
 fprintf('*** Load references ... \n')
 
 
@@ -114,7 +114,7 @@ if  strcmp(model.buildingType,'HollandschHuys')
     Ts = model.plant.Ts;
     if RefsParam.Price.variable
 %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-       references.EnergyPrice = 0.25 + 0*heaviside((1:length(WB))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+       references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(WB))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
 %        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
        references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
     %    TODO:  load price profile interface
@@ -127,16 +127,16 @@ if  strcmp(model.buildingType,'HollandschHuys')
 
     % Constant COP
 
-    references.COP = 3;
+%     references.COP = 3;
 
     % Time varying COP
 
-%     TSource = 273.5 + 15;
-%     references.COP = zeros(size(TSup,1),model.pred.ny);
-%     for i = 1:model.pred.ny
-%         references.COP(:,i) = 0.45*(TSup./(TSup - TSource + 10));
-%     end
-%     references.COP = references.COP';
+    references.COP = zeros(size(Te,1),model.pred.nu);
+    Ts = 273.15 + 60;
+    for i = 1:model.pred.nu
+        references.COP(:,i) = 0.45*(Ts./(Ts - (Te+273.15) + 10));
+    end
+    references.COP = references.COP';
 
 else
     %% comfort boundaries
@@ -199,11 +199,13 @@ else
 %     references.COP = 3;
 
     % Time varying COP
-
-    TSource = 273.5 + 15;
-    references.COP = zeros(size(TSup,1),model.pred.ny);
-    for i = 1:model.pred.ny
-        references.COP(:,i) = 0.45*(TSup./(TSup - TSource + 10));
+    Te_index = 41;
+    Te = dist.d(:,Te_index);        % Ambient temperature
+    Ts = 273.5 + 60;                % Supply temperature
+%     TSource = 273.5 + 15;
+    references.COP = zeros(size(Te,1),model.pred.nu);
+    for i = 1:model.pred.nu
+        references.COP(:,i) = 0.45*(Ts./(Ts - Te + 10));
     end
     references.COP = references.COP';
 end

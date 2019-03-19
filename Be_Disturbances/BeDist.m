@@ -7,8 +7,8 @@ if nargin < 2
    DistParam.reload = 0;
 end
 
-
-path = ['../buildings/', model.buildingType];
+path = ['C:\Users\Joren\Documents\BeSim\buildings\', model.buildingType];
+% path = ['../buildings/', model.buildingType];
 disturbanceType = ''; % can be '_lin' if used for linearization validation
 
 if DistParam.reload

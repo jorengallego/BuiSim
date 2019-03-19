@@ -6,18 +6,18 @@
 % functionality intended for automatic construction of controls and
 % estimation for a given linear building model
 
-clear
-addpath(genpath('C:\Program Files\MATLAB\R2018b\YALMIP-master'))
-yalmip('clear');
-% close all
-addpath C:\gurobi810\win64\matlab
-addpath('../Be_Modeling/')
-addpath('../Be_Disturbances/')
-addpath('../Be_References/')
-addpath('../Be_Estimation/')
-addpath('../Be_Control/')
-addpath('../Be_Simulation/')
-addpath('../Be_Learn/')
+% % clear
+% addpath(genpath('C:\Program Files\MATLAB\R2018b\YALMIP-master'))
+% yalmip('clear');
+% % close all
+% addpath C:\gurobi810\win64\matlab
+% addpath('../Be_Modeling/')
+% addpath('../Be_Disturbances/')
+% addpath('../Be_References/')
+% addpath('../Be_Estimation/')
+% addpath('../Be_Control/')
+% addpath('../Be_Simulation/')
+% addpath('../Be_Learn/')
 
 %% Model: emulator + predictor (controller)
 
@@ -39,7 +39,7 @@ addpath('../Be_Learn/')
 
 % =========== particular example =================
 % buildingType = 'Old';  ModelParam.Orders.range = [4, 7, 10, 15, 20, 30, 40, 100];
-buildingType = 'HollandschHuys'; ModelParam.Orders.range = [100, 200, 600]; 
+% buildingType = 'HollandschHuys'; ModelParam.Orders.range = [100, 200, 600]; 
 ModelParam.Orders.choice = 'full';
 ModelParam.Orders.off_free = 0;    
 ModelParam.reload = 0; 
@@ -79,8 +79,8 @@ CtrlParam.MLagent.use = 0;
 ctrl = BeCtrl(model, CtrlParam);       % construct a controller object  
 
 %% Simulate
-SimParam.run.start = 1;
-SimParam.run.end = 4; 
+% SimParam.run.start = 185;
+% SimParam.run.end = 190; 
 SimParam.verbose = 1;
 SimParam.flagSave = 0;
 SimParam.comfortTol = 1e-1;

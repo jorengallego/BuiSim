@@ -20,7 +20,8 @@ if nargin < 2
 end
 
 % building parameters
-path = ['../buildings/', buildingType];
+path = ['C:\Users\Joren\Documents\BeSim\buildings\', buildingType];
+% path = ['../buildings/', buildingType];
 disturbanceType = ''; % can be '_lin' if used for linearization validation
 model.buildingType = buildingType;
 model.Orders.range = ModelParam.Orders.range;

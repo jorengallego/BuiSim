@@ -48,6 +48,8 @@ end
     wb_prev = sdpvar(ny, Nrp, 'full');
     % variable energy price profile
     price = sdpvar(1, Nrp, 'full');
+    % variable COP profile
+    cop = sdpvar(nu, Nc, 'full');
     
 %     u_traj = sdpvar(nu, Nc, 'full');
     
@@ -89,9 +91,11 @@ end
             % move blocking
         if k > Nc
             uk = u(:,Nc);
+            copk = cop(:,Nc);
 %             u_traj(:,k) = u(:,Nc);
         else
             uk = u(:,k);
+            copk = cop(:,k);
 %             u_traj(:,k) = u(:,k);
         end
 
@@ -166,7 +170,7 @@ end
     %   -------------  OBJECTIVE FUNCTION  -------------
         %    % quadratic objective function withouth states constr.  penalisation
                 obj = obj + s(:,k)'*Qsb*s(:,k) + ...         %  comfort zone penalization
-                              P*(uk'*Qu*uk);                              %  quadratic penalization of ctrl action move blocking formulation
+                              P*((uk'./copk')*Qu*(uk./copk));                              %  quadratic penalization of ctrl action move blocking formulation
     end
 
 
@@ -182,9 +186,9 @@ end
 
     % optimizer for dynamic comfort zone
     if nd == 0  % no disturbances formulation
-        mpc = optimizer(con, obj, options,  { x(:, 1), wa_prev, wb_prev, price }, {u(:,1); obj} );
+        mpc = optimizer(con, obj, options,  { x(:, 1), wa_prev, wb_prev, price, cop }, {u(:,1); obj} );
     else
-        mpc = optimizer(con, obj, options,  { x(:, 1), d_prev, wa_prev, wb_prev, price }, {u(:,1); obj} );
+        mpc = optimizer(con, obj, options,  { x(:, 1), d_prev, wa_prev, wb_prev, price, cop }, {u(:,1); obj} );
     end
     
     

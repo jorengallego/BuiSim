@@ -90,7 +90,8 @@ D = dist.d(SimStart:SimStop+N,:)';
 % realisrtic states initialization for particular models
 if  strcmp(model.buildingType,'HollandschHuys')
     % building parameters
-    path = ['../buildings/', model.buildingType];
+    path = ['C:\Users\Joren\Documents\BeSim\buildings\', model.buildingType];
+%     path = ['../buildings/', model.buildingType];
     load([path '/preComputed_matlab/X_initialization.mat'],'x_init');
 %     load('X_initialization.mat','x_init')
 	X(:,1) = x_init;
@@ -122,6 +123,7 @@ else   % initialize matrices for closed loop control simulations
     % ------ energy price ------
     Price = refs.Price(SimStart:SimStop+N,:)'; % /W
     EnergyPrice = refs.EnergyPrice(SimStart:SimStop+N,:)'; % /kWh
+    COP = refs.COP(:,SimStart:SimStop+N);
 
     if ctrl.RBC.use
         % supply water temperature
@@ -218,20 +220,21 @@ for k = 1:Nsim
             wb_prev = wb(:, k:k+(ctrl.MPC.Nrp-1));
             % preview of the price signal
             Price_prev = Price(:, k:k+(ctrl.MPC.Nrp-1));
+            COP_prev = COP(:, k:k+(ctrl.MPC.Nrp-1));
             
             
 %             TODO:  adapt Dpreview wa_prev wb_prev
             if estim.use   % estimated states
                 if model.plant.nd == 0  %  no disturbnances option
-                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{xp, wa_prev, wb_prev, Price_prev}}; % optimizer with estimated states
+                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{xp, wa_prev, wb_prev, Price_prev, COP_prev}}; % optimizer with estimated states
                 else
-                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{xp, Dpreview, wa_prev, wb_prev, Price_prev}}; % optimizer with estimated states
+                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{xp, Dpreview, wa_prev, wb_prev, Price_prev, COP_prev}}; % optimizer with estimated states
                 end
             else    % perfect state update
                 if model.plant.nd == 0  %  no disturbnances option
-                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{x0, wa_prev, wb_prev, Price_prev}}; % optimizer with estimated states
+                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{x0, wa_prev, wb_prev, Price_prev, COP_prev}}; % optimizer with estimated states
                 else
-                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{x0, Dpreview, wa_prev, wb_prev, Price_prev}}; % optimizer with measured states  
+                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{x0, Dpreview, wa_prev, wb_prev, Price_prev, COP_prev}}; % optimizer with measured states  
                 end
                  
             end
@@ -494,9 +497,7 @@ if  ctrl.use
     Ucool = U(U<0);
     Qheat = 1;   % heat coefficient
     Qcool = 1;   % cool coefficient
-    COP = refs.COP; % te gebruiken indien constante COP
-    %COP = refs.COP(:,SimStart:SimStop); % te gebruiken indien variabale COP
-    E = U./COP;
+    E = U./COP(:,1:k);
     Eheat = E(E>0);
     Ecool  = E(E<0);
    
@@ -637,9 +638,13 @@ if ctrl.use
 %     Price signal
     outdata.data.Price = Price(:,1:end-Nrp);
     outdata.data.EnergyPrice = EnergyPrice(:,1:end-Nrp);
-    outdata.data.Cost = Price(:,1:end-Nrp).*E;   
+    outdata.data.Cost = Price(:,1:end-Nrp).*E;
+    for j = 1:model.plant.ny
+            Eurocost(j) = sum(outdata.data.Cost(j,:));       % heating cost [kW hours]
+    end
+    outdata.data.TotalCost = sum(Eurocost);
 %     COP
-    outdata.data.COP = COP;
+    outdata.data.COP = COP(:,1:k);
 %     if ctrl.MPC.use
 %         % obj function
 %         outdata.data.J = J;
@@ -668,6 +673,7 @@ if SimParam.verbose
         fprintf('          Heating Electricity cost: %.2f kWh\n', outdata.info.OverallHeatingElectricityCost);
         fprintf('          Cooling Electricity cost: %.2f kWh\n', outdata.info.OverallCoolingElectricityCost);
         fprintf('            Total Electricity cost: %.2f kWh\n', outdata.info.OverallTotalElectricityCost);
+        fprintf('    Total Electricity cost in euro: %.2f €\n', outdata.data.TotalCost);
         fprintf('               Comfort: %.2f Kh\n',  outdata.info.Overall_Kh);
         fprintf('        PMV violations: %.2f \n', outdata.info.Overall_PMV_TVS);
     end
