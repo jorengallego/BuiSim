@@ -79,8 +79,8 @@ CtrlParam.MLagent.use = 0;
 ctrl = BeCtrl(model, CtrlParam);       % construct a controller object  
 
 %% Simulate
-% SimParam.run.start = 185;
-% SimParam.run.end = 190; 
+% SimParam.run.start = 1;
+% SimParam.run.end = 4; 
 SimParam.verbose = 1;
 SimParam.flagSave = 0;
 SimParam.comfortTol = 1e-1;

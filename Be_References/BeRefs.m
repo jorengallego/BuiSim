@@ -131,10 +131,34 @@ if  strcmp(model.buildingType,'HollandschHuys')
 
     % Time varying COP
 
+    
+    Te3d = zeros(size(Te,1),1); % The previous three days average ambient temperature needed for calculation of supply temperature with heating curve
+    for i = 1:size(Te,1)
+        if i < 3*day_steps+1
+            Te3d(i) = (sum(Te(1:i)) + sum(Te(end - 3*day_steps + i:end)))/(3*day_steps);
+        else
+            Te3d(i) = sum(Te(i-3*day_steps:i))/(3*day_steps);
+        end
+    end
+    
+    Tsupply = zeros(size(Te,1),1); % Supply temperature based on heating curve PhD Damien Picard
+    for i = 1:size(Ts,1)
+        if Te3d(i) < -8
+            Tsupply(i) = 29;
+        elseif -8 < Te3d(i) < 15
+            Tsupply(i) = 29 - (7/23)*(Te3d(i) + 8);
+        elseif 15 < Te3d(i) < 18
+            Tsupply(i) = 22;
+        elseif 18 < Te3d(i) < 30
+            Tsupply(i) = 22 - (5/12)*(Te3d(i) - 18);
+        else
+            Tsupply(i) = 17;
+        end
+    end 
+        
     references.COP = zeros(size(Te,1),model.pred.nu);
-    Ts = 273.15 + 60;
     for i = 1:model.pred.nu
-        references.COP(:,i) = 0.45*(Ts./(Ts - (Te+273.15) + 10));
+        references.COP(:,i) = 0.45*((Tsupply+273.15)./(Tsupply - Te + 10)); % Correlation formula for COP
     end
     references.COP = references.COP';
 
@@ -201,11 +225,11 @@ else
     % Time varying COP
     Te_index = 41;
     Te = dist.d(:,Te_index);        % Ambient temperature
-    Ts = 273.5 + 60;                % Supply temperature
+    Tsupply = 273.5 + 15;                % Supply temperature
 %     TSource = 273.5 + 15;
     references.COP = zeros(size(Te,1),model.pred.nu);
     for i = 1:model.pred.nu
-        references.COP(:,i) = 0.45*(Ts./(Ts - Te + 10));
+        references.COP(:,i) = 0.45*(Tsupply./(Tsupply - Te + 10));
     end
     references.COP = references.COP';
 end
