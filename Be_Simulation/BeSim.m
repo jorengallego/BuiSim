@@ -87,7 +87,7 @@ end
 X = zeros(model.plant.nx,Nsim+1);
 D = dist.d(SimStart:SimStop+N,:)';
 
-% realisrtic states initialization for particular models
+% realistic states initialization for particular models
 if  strcmp(model.buildingType,'HollandschHuys')
     % building parameters
     path = ['C:\Users\Joren\Documents\BeSim\buildings\', model.buildingType];

@@ -31,13 +31,13 @@ if  strcmp(model.buildingType,'HollandschHuys')
     % for more details see Damians PhD page 168
 
     % Te(i)  - ambient temperature at timestep i
-    Te_index = 212;    % TODO: generalize ambient temperature indexing for all models in BuiSim
+    Te_index = 222;    % TODO: generalize ambient temperature indexing for all models in BuiSim
     Te = dist.d(:,Te_index) - 273.15;
     day_steps = 86400/model.pred.Ts;     % number of steps per day,  24h = 86400 sec
     steps = length(Te);                  % number of datapoints in dataset
     days = floor(steps/day_steps);  %  number of days in dataset
 
-    % Tem(k) - one day average  amient temperature at day k
+    % Tem(k) - one day average ambient temperature at day k
     for k = 0:days-1
        Tem(k+1) =  mean(Te(1+k*day_steps:(1+k)*day_steps));
     end
@@ -111,15 +111,19 @@ if  strcmp(model.buildingType,'HollandschHuys')
 
 
     %% variable price profiles
+    stdprice = RefsParam.Price.stdprice;
+    factor = RefsParam.Price.factor;
+    day = RefsParam.Price.day-1;
+    hour = RefsParam.Price.hour;
     Ts = model.plant.Ts;
     if RefsParam.Price.variable
 %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-       references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(WB))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+       references.EnergyPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
 %        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
        references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
     %    TODO:  load price profile interface
     else
-       references.Price = ones(size(WB));  % standard fixed price 
+       references.Price = 0.25*Ts/3600/1000*ones(size(WB));  % standard fixed price 
        % references.EnergyPrice = ones(size(WB));
     end
     
@@ -142,14 +146,14 @@ if  strcmp(model.buildingType,'HollandschHuys')
     end
     
     Tsupply = zeros(size(Te,1),1); % Supply temperature based on heating curve PhD Damien Picard
-    for i = 1:size(Ts,1)
-        if Te3d(i) < -8
+    for i = 1:size(Tsupply,1)
+        if Te3d(i) <= -8
             Tsupply(i) = 29;
-        elseif -8 < Te3d(i) < 15
+        elseif -8 < Te3d(i) <= 15
             Tsupply(i) = 29 - (7/23)*(Te3d(i) + 8);
-        elseif 15 < Te3d(i) < 18
+        elseif 15 < Te3d(i) <= 18
             Tsupply(i) = 22;
-        elseif 18 < Te3d(i) < 30
+        elseif 18 < Te3d(i) <= 30
             Tsupply(i) = 22 - (5/12)*(Te3d(i) - 18);
         else
             Tsupply(i) = 17;
@@ -174,22 +178,22 @@ else
     % plot(t_comf,TSup)
     % legend('supply watter')
     
-    for k = 0:366
-        for i = 1:33
-            TLow((k*96)+i)= 290.15;
-            TUp((k*96)+i)= 299.15;
-        end
-        for i = 34:93
-            TLow((k*96)+i) = 293.15;
-            TUp((k*96)+i) = 296.15;
-        end
-        for i = 94:96
-            TLow((k*96)+i) = 290.15;
-            TUp((k*96)+i) = 299.15;
-        end
-    end
-    TLow = TLow(1:35224,:);
-    TUp = TUp(1:35224,:);
+%     for k = 0:366
+%         for i = 1:33
+%             TLow((k*96)+i)= 290.15;
+%             TUp((k*96)+i)= 299.15;
+%         end
+%         for i = 34:93
+%             TLow((k*96)+i) = 293.15;
+%             TUp((k*96)+i) = 296.15;
+%         end
+%         for i = 94:96
+%             TLow((k*96)+i) = 290.15;
+%             TUp((k*96)+i) = 299.15;
+%         end
+%     end
+%     TLow = TLow(1:35224,:);
+%     TUp = TUp(1:35224,:);
 
     references.R = (TLow+(TUp-TLow)/2)*ones(1,model.pred.ny);  % setpoint in K
     % references.ref = (TRefControl+2.5)*ones(1,model.pred.ny);  % setpoint in K
@@ -203,15 +207,19 @@ else
     references.TSup = TSup;   % supply water temperature from HC
 
     %% variable price profiles
+    stdprice = RefsParam.Price.stdprice;
+    factor = RefsParam.Price.factor;
+    day = RefsParam.Price.day-1;
+    hour = RefsParam.Price.hour;
     Ts = model.plant.Ts;
     if RefsParam.Price.variable
     %    references.Price = 1+sin(0.01*(1:length(TLow)))'; % variable price profile
-       references.EnergyPrice = 0.25 + 0.8*heaviside((1:length(TLow))-(((187*24)+12)*4))'; % + 0.8*heaviside((1:length(TLow))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+       references.EnergyPrice = stdprice + factor*heaviside((1:length(TLow))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(TLow))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
        %references.EnergyPrice = rectangularPulse(2,3,1:length(TLow));
        references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
     %    TODO:  load price profile interface
     else
-       references.Price = ones(size(TLow));  % standard fixed price 
+       references.Price = 0.25*Ts/3600/1000*ones(size(TLow));  % standard fixed price 
        % references.EnergyPrice = ones(size(TLow));
     end
 
@@ -225,7 +233,7 @@ else
     % Time varying COP
     Te_index = 41;
     Te = dist.d(:,Te_index);        % Ambient temperature
-    Tsupply = 273.5 + 15;                % Supply temperature
+    Tsupply = 273.15 + 20;                % Supply temperature
 %     TSource = 273.5 + 15;
     references.COP = zeros(size(Te,1),model.pred.nu);
     for i = 1:model.pred.nu

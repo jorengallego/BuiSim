@@ -6,10 +6,10 @@
 % functionality intended for automatic construction of controls and
 % estimation for a given linear building model
 
-% % clear
+% clear
 % addpath(genpath('C:\Program Files\MATLAB\R2018b\YALMIP-master'))
 % yalmip('clear');
-% % close all
+% close all
 % addpath C:\gurobi810\win64\matlab
 % addpath('../Be_Modeling/')
 % addpath('../Be_Disturbances/')
@@ -40,7 +40,7 @@
 % =========== particular example =================
 % buildingType = 'Old';  ModelParam.Orders.range = [4, 7, 10, 15, 20, 30, 40, 100];
 % buildingType = 'HollandschHuys'; ModelParam.Orders.range = [100, 200, 600]; 
-ModelParam.Orders.choice = 'full';
+% ModelParam.Orders.choice = 'full';
 ModelParam.Orders.off_free = 0;    
 ModelParam.reload = 0; 
 
@@ -56,6 +56,10 @@ dist = BeDist(model, DistParam);        % construct a disturbances object
 %% References 
 % comfort constraints, price profiles
 RefsParam.Price.variable = 1;       %1 =  variable price profile, 0 = fixed to 1
+% RefsParam.Price.stdprice = 0.25;
+% RefsParam.Price.factor = 0.8;
+% RefsParam.Price.day = 300;
+% RefsParam.Price.hour = 6;
 
 refs = BeRefs(model, dist, RefsParam);     % construct a references object  
 
@@ -76,11 +80,10 @@ CtrlParam.RBC.use = 0;
 CtrlParam.PID.use = 0;
 CtrlParam.MLagent.use = 0;
 
-ctrl = BeCtrl(model, CtrlParam);       % construct a controller object  
-
+ctrl = BeCtrl(model, CtrlParam);       % construct a controller object 
 %% Simulate
 % SimParam.run.start = 1;
-% SimParam.run.end = 4; 
+% SimParam.run.end = 10; 
 SimParam.verbose = 1;
 SimParam.flagSave = 0;
 SimParam.comfortTol = 1e-1;

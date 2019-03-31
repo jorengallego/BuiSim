@@ -297,12 +297,16 @@ if PlotParam.plotPrice && outdata.ctrl.use
     ylabel('Cost [Euro]')
     xlabel('time [days]')
     subplot(3, 1, 3); 
+    yyaxis left
     stairs(Time, sum(outdata.data.Cost), 'linewidth', 2);
     title('Total Electricity Cost');
     axis tight
     grid on
     ylabel('Cost [Euro]')
     xlabel('time [days]')
+    yyaxis right
+    plot(Time, outdata.data.EnergyPrice, 'linewidth', 2);
+    ylabel('Price [Euro/kWh]')
     
     figure
     plot(Time, outdata.data.COP, 'linewidth', 2);
