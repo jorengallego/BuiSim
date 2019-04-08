@@ -84,7 +84,7 @@ else
 end
 
 
-X = zeros(model.plant.nx,Nsim+1);
+X = zeros(model.plant.nx,Nsim+1); % Change zeros to factor*ones(model.plant.nx,Nsim+1) for changing the initial temperature (std temp = 21°C)
 D = dist.d(SimStart:SimStop+N,:)';
 
 % realistic states initialization for particular models
@@ -112,7 +112,7 @@ else   % initialize matrices for closed loop control simulations
 
     % ------ references ------
     if  strcmp(model.buildingType,'Reno') ||  strcmp(model.buildingType,'Old') ||  strcmp(model.buildingType,'RenoLight')
-         R = refs.R(SimStart:SimStop,:)';
+         R = refs.R(SimStart:SimStop,:)'; % Only necessary when using RBC
     end
     % above and below threshold comfort zone
     wa = refs.wa(SimStart:SimStop+N,:)';
