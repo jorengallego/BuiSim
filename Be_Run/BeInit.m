@@ -56,6 +56,7 @@ dist = BeDist(model, DistParam);        % construct a disturbances object
 %% References 
 % comfort constraints, price profiles
 RefsParam.Price.variable = 1;       %1 =  variable price profile, 0 = fixed to 1
+RefsParam.Price.Belpex = 0;         %1 =  Belpex price profile, 0 = fixed
 % RefsParam.Price.stdprice = 0.25;
 % RefsParam.Price.factor = 0.8;
 % RefsParam.Price.day = 300;

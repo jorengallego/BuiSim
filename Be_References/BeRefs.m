@@ -123,25 +123,29 @@ if  strcmp(model.buildingType,'HollandschHuys')
     hour = RefsParam.Price.hour;
     Ts = model.plant.Ts;
     if RefsParam.Price.variable
-%        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-       references.EnergyPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
-%        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
-       references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
-    %    TODO:  load price profile interface
+        if RefsParam.Price.Belpex
+            Belpex2018 = xlsread('BelpexFilter.xlsx');
+            references.EnergyPrice = [];
+            for i = 1:8760
+                references.EnergyPrice = [references.EnergyPrice, Belpex2018(i), Belpex2018(i), Belpex2018(i), Belpex2018(i)];
+            end   
+            references.EnergyPrice = references.EnergyPrice'/1000; % Prices in €/kWh
+            references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
+        else   
+        %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
+            references.EnergyPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+        %        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
+            references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
+            %    TODO:  load price profile interface
+        end    
     else
        references.Price = 0.25*Ts/3600/1000*ones(size(WB));  % standard fixed price 
        % references.EnergyPrice = ones(size(WB));
     end
     
+ 
     %% COP Heat pump
-
-    % Constant COP
-
-%     references.COP = 3;
-
-    % Time varying COP
-
-    
+   
     Te3d = zeros(size(Te,1),1); % The previous three days average ambient temperature needed for calculation of supply temperature with heating curve
     for i = 1:size(Te,1)
         if i < 3*day_steps+1
@@ -171,7 +175,7 @@ if  strcmp(model.buildingType,'HollandschHuys')
     
     references.COP = zeros(size(Te,1),model.pred.nu);
     for i = 1:model.pred.nu
-        references.COP(:,i) = 0.45*((Tsupply+273.15)./(Tsupply - Tground + 10)); % Correlation formula for COP
+        references.COP(:,i) = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10)); % Correlation formula for COP
     end
     references.COP = references.COP';
 
@@ -288,11 +292,21 @@ else
     hour = RefsParam.Price.hour;
     Ts = model.plant.Ts;
     if RefsParam.Price.variable
-    %    references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-       references.EnergyPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(TLow))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
-       %references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
-       references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
-    %    TODO:  load price profile interface
+        if RefsParam.Price.Belpex
+            Belpex2018 = xlsread('BelpexFilter.xlsx');
+            references.EnergyPrice = [];
+            for i = 1:8760
+                references.EnergyPrice = [references.EnergyPrice, Belpex2018(i), Belpex2018(i), Belpex2018(i), Belpex2018(i)];
+            end   
+            references.EnergyPrice = references.EnergyPrice'/1000; % Prices in €/kWh
+            references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
+        else   
+        %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
+            references.EnergyPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+        %        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
+            references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
+            %    TODO:  load price profile interface
+        end    
     else
        references.Price = 0.25*Ts/3600/1000*ones(size(WB));  % standard fixed price 
        % references.EnergyPrice = ones(size(WB));
@@ -300,18 +314,12 @@ else
 
     
     %% COP Heat pump
-
-    % Constant COP
-
-%     references.COP = 3;
-
-    % Time varying COP
   
-    Tsupply = 273.15 + 40;                % Supply temperature
+    Tsupply = 40;                % Supply temperature
 %     TSource = 273.5 + 15;
     references.COP = zeros(size(Te,1),model.pred.nu);
     for i = 1:model.pred.nu
-        references.COP(:,i) = 0.45*(Tsupply./(Tsupply - Te + 10));
+        references.COP(:,i) = 0.5*((Tsupply+273.15)./(Tsupply - Te + 10));
     end
     references.COP = references.COP';
 end
