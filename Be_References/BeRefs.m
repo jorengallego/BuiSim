@@ -170,12 +170,21 @@ if  strcmp(model.buildingType,'HollandschHuys')
         end
     end 
     
-    Tground_index = 224;
-    Tground = dist.d(:,Tground_index) - 273.15;
-    
-    references.COP = zeros(size(Te,1),model.pred.nu);
-    for i = 1:model.pred.nu
-        references.COP(:,i) = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10)); % Correlation formula for COP
+    if RefsParam.HP.ground
+        % Ground source heat pump
+        Tground_index = 224;
+        Tground = dist.d(:,Tground_index) - 273.15;
+
+        references.COP = zeros(size(Te,1),model.pred.nu);
+        for i = 1:model.pred.nu
+            references.COP(:,i) = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10)); % Correlation formula for COP
+        end
+    else 
+        % Air source heat pump
+        references.COP = zeros(size(Te,1),model.pred.nu);
+        for i = 1:model.pred.nu
+            references.COP(:,i) = 0.38*((Tsupply+273.15)./(Tsupply - Te + 10));
+        end
     end
     references.COP = references.COP';
 
@@ -314,12 +323,43 @@ else
 
     
     %% COP Heat pump
-  
-    Tsupply = 40;                % Supply temperature
-%     TSource = 273.5 + 15;
-    references.COP = zeros(size(Te,1),model.pred.nu);
-    for i = 1:model.pred.nu
-        references.COP(:,i) = 0.5*((Tsupply+273.15)./(Tsupply - Te + 10));
+    
+    Tsupply = zeros(size(Te,1),1); % Supply temperature based on heating curve PhD Damien Picard
+    for i = 1:size(Tsupply,1)
+        if Te(i) <= -20
+            Tsupply(i) = 65;
+        elseif -20 < Te(i) <= -10
+            Tsupply(i) = 65 - (6/10)*(Te(i) + 20);
+        elseif -10 < Te(i) <= -5
+            Tsupply(i) = 59 - (4/5)*(Te(i) + 10);
+        elseif -5 < Te(i) <= 0
+            Tsupply(i) = 55 - (12/5)*(Te(i) + 5);
+        elseif 0 < Te(i) <= 5
+            Tsupply(i) = 43 - (4/5)*Te(i);
+        elseif 5 < Te(i) <= 10
+            Tsupply(i) = 39 - (6/5)*(Te(i) - 5);
+        elseif 10 < Te(i) <= 20
+            Tsupply(i) = 33 - (8/10)*(Te(i) - 10);
+        else
+            Tsupply(i) = 25;
+        end
+    end 
+    
+    if RefsParam.HP.ground
+        % Ground source heat pump
+        Tground_index = 44;
+        Tground = dist.d(:,Tground_index) - 273.15;
+
+        references.COP = zeros(size(Te,1),model.pred.nu);
+        for i = 1:model.pred.nu
+            references.COP(:,i) = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10));
+        end
+    else
+        % Air source heat pump
+        references.COP = zeros(size(Te,1),model.pred.nu);
+        for i = 1:model.pred.nu
+            references.COP(:,i) = 0.38*((Tsupply+273.15)./(Tsupply - Te + 10));
+        end
     end
     references.COP = references.COP';
 end

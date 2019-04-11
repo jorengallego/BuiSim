@@ -83,7 +83,7 @@ else
             Nrp = 0;
 end
 
-
+% X = SimParam.X;
 X = zeros(model.plant.nx,Nsim+1); % Change zeros to factor*ones(model.plant.nx,Nsim+1) for changing the initial temperature (std temp = 21°C)
 D = dist.d(SimStart:SimStop+N,:)';
 

@@ -61,6 +61,7 @@ RefsParam.Price.Belpex = 0;         %1 =  Belpex price profile, 0 = fixed
 % RefsParam.Price.factor = 0.8;
 % RefsParam.Price.day = 300;
 % RefsParam.Price.hour = 6;
+% RefsParam.HP.ground = 1;
 
 refs = BeRefs(model, dist, RefsParam);     % construct a references object  
 
@@ -111,5 +112,8 @@ if PlotParam.flagPlot
     BePlot(outdata,PlotParam)
 end
  
- 
+ADRElectricity = outdata.data.E;
+ADRTemperatures = outdata.data.X;
+save('C:\Users\Joren\Documents\BeSim Kwantificatie Flexibiliteit\OutputADRElectricity.mat', 'ADRElectricity');
+save('C:\Users\Joren\Documents\BeSim Kwantificatie Flexibiliteit\OutputADRTemperatures.mat', 'ADRTemperatures'); 
  
