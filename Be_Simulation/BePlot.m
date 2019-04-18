@@ -281,7 +281,7 @@ if PlotParam.plotPrice && outdata.ctrl.use
     figure
 %     price profile
     subplot(3, 1, 1); 
-    plot(Time, outdata.data.EnergyPrice, 'linewidth', 2);
+    plot(Time, outdata.data.ElectricityPrice, 'linewidth', 2);
 %     plot(Time, outdata.data.Price, 'linewidth', 2);
     title('Electricity Price Profile');
     axis tight
@@ -307,7 +307,7 @@ if PlotParam.plotPrice && outdata.ctrl.use
     xlabel('time [days]')
     yyaxis right
 %     plot(Time, outdata.data.Price, 'linewidth', 2);
-    plot(Time, outdata.data.EnergyPrice, 'linewidth', 2);
+    plot(Time, outdata.data.ElectricityPrice, 'linewidth', 2);
     ylabel('Price [Euro/kWh]')
     
     figure

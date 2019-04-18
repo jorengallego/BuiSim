@@ -122,7 +122,7 @@ else   % initialize matrices for closed loop control simulations
     PMVlb = refs.PMVlb(SimStart:SimStop);
     % ------ energy price ------
     Price = refs.Price(SimStart:SimStop+N,:)'; % /W
-    EnergyPrice = refs.EnergyPrice(SimStart:SimStop+N,:)'; % /kWh
+    ElectricityPrice = refs.ElectricityPrice(SimStart:SimStop+N,:)'; % /kWh
     COP = refs.COP(:,SimStart:SimStop+N);
 
     if ctrl.RBC.use
@@ -637,7 +637,7 @@ if ctrl.use
     
 %     Price signal
     outdata.data.Price = Price(:,1:end-Nrp);
-    outdata.data.EnergyPrice = EnergyPrice(:,1:end-Nrp);
+    outdata.data.ElectricityPrice = ElectricityPrice(:,1:end-Nrp);
     outdata.data.Cost = Price(:,1:end-Nrp).*E;
     for j = 1:model.plant.ny
             Eurocost(j) = sum(outdata.data.Cost(j,:));       % heating cost [kW hours]

@@ -125,22 +125,22 @@ if  strcmp(model.buildingType,'HollandschHuys')
     if RefsParam.Price.variable
         if RefsParam.Price.Belpex
             Belpex2018 = xlsread('BelpexFilter.xlsx');
-            references.EnergyPrice = [];
+            references.ElectricityPrice = [];
             for i = 1:8760
-                references.EnergyPrice = [references.EnergyPrice, Belpex2018(i), Belpex2018(i), Belpex2018(i), Belpex2018(i)];
+                references.ElectricityPrice = [references.ElectricityPrice, Belpex2018(i), Belpex2018(i), Belpex2018(i), Belpex2018(i)];
             end   
-            references.EnergyPrice = references.EnergyPrice'/1000; % Prices in €/kWh
-            references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
+            references.ElectricityPrice = references.ElectricityPrice'/1000; % Prices in €/kWh
+            references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
         else   
         %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-            references.EnergyPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
-        %        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
-            references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
+            references.ElectricityPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+        %        references.ElectricityPrice = rectangularPulse(2,3,1:length(WB));
+            references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
             %    TODO:  load price profile interface
         end    
     else
-       references.Price = 0.25*Ts/3600/1000*ones(size(WB));  % standard fixed price 
-       % references.EnergyPrice = ones(size(WB));
+       references.ElectricityPrice = 0.25*ones(size(WB)); % [€/kWh]
+       references.Price = references.ElectricityPrice*Ts/3600/1000;  % standard fixed price [€/W]
     end
     
  
@@ -303,22 +303,22 @@ else
     if RefsParam.Price.variable
         if RefsParam.Price.Belpex
             Belpex2018 = xlsread('BelpexFilter.xlsx');
-            references.EnergyPrice = [];
+            references.ElectricityPrice = [];
             for i = 1:8760
-                references.EnergyPrice = [references.EnergyPrice, Belpex2018(i), Belpex2018(i), Belpex2018(i), Belpex2018(i)];
+                references.ElectricityPrice = [references.ElectricityPrice, Belpex2018(i), Belpex2018(i), Belpex2018(i), Belpex2018(i)];
             end   
-            references.EnergyPrice = references.EnergyPrice'/1000; % Prices in €/kWh
-            references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
+            references.ElectricityPrice = references.ElectricityPrice'/1000; % Prices in €/kWh
+            references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
         else   
         %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-            references.EnergyPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
-        %        references.EnergyPrice = rectangularPulse(2,3,1:length(WB));
-            references.Price = references.EnergyPrice*Ts/3600/1000; % [€/W]
+            references.ElectricityPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+        %        references.ElectricityPrice = rectangularPulse(2,3,1:length(WB));
+            references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
             %    TODO:  load price profile interface
         end    
     else
-       references.Price = 0.25*Ts/3600/1000*ones(size(WB));  % standard fixed price 
-       % references.EnergyPrice = ones(size(WB));
+       references.ElectricityPrice = 0.25*ones(size(WB)); % [€/kWh]
+       references.Price = references.ElectricityPrice*Ts/3600/1000;  % standard fixed price [€/W]
     end
 
     
