@@ -187,6 +187,7 @@ if  strcmp(model.buildingType,'HollandschHuys')
         end
     end
     references.COP = references.COP';
+    references.COP(references.COP>6) = 6;
 
 else
     %% comfort boundaries
@@ -362,6 +363,7 @@ else
         end
     end
     references.COP = references.COP';
+    references.COP(references.COP>6) = 6;
 end
 
 fprintf('*** Done.\n')

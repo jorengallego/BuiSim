@@ -83,8 +83,8 @@ else
             Nrp = 0;
 end
 
-% X = SimParam.X;
 X = zeros(model.plant.nx,Nsim+1); % Change zeros to factor*ones(model.plant.nx,Nsim+1) for changing the initial temperature (std temp = 21°C)
+X(:,1) = SimParam.X;
 D = dist.d(SimStart:SimStop+N,:)';
 
 % realistic states initialization for particular models
@@ -95,6 +95,7 @@ if  strcmp(model.buildingType,'HollandschHuys')
     load([path '/preComputed_matlab/X_initialization.mat'],'x_init');
 %     load('X_initialization.mat','x_init')
 	X(:,1) = x_init;
+%     X(:,1) = SimParam.X;
 end
 
 
