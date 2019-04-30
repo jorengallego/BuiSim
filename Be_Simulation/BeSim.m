@@ -84,7 +84,7 @@ else
 end
 
 X = zeros(model.plant.nx,Nsim+1); % Change zeros to factor*ones(model.plant.nx,Nsim+1) for changing the initial temperature (std temp = 21°C)
-X(:,1) = SimParam.X;
+% X(:,1) = SimParam.X;
 D = dist.d(SimStart:SimStop+N,:)';
 
 % realistic states initialization for particular models
@@ -637,13 +637,13 @@ if ctrl.use
 %     outdata.data.PMV_V = PMVViol;
     
 %     Price signal
-    outdata.data.Price = Price(:,1:end-Nrp);
-    outdata.data.ElectricityPrice = ElectricityPrice(:,1:end-Nrp);
-    outdata.data.Cost = Price(:,1:end-Nrp).*E;
+    outdata.data.Price = Price(:,1:end-Nrp); % [€/kWh]
+    outdata.data.ElectricityPrice = ElectricityPrice(:,1:end-Nrp); % [€/W]
+    outdata.data.Cost = Price(:,1:end-Nrp).*abs(E); % [€] per quarter of an hour
     for j = 1:model.plant.ny
-            Eurocost(j) = sum(outdata.data.Cost(j,:));       % heating cost [kW hours]
+            Eurocost(j) = sum(outdata.data.Cost(j,:));     % sum up all zones
     end
-    outdata.data.TotalCost = sum(Eurocost);
+    outdata.data.TotalCost = sum(Eurocost); % Total cost of electricity in simulation [€]
 %     COP
     outdata.data.COP = COP(:,1:k);
 %     if ctrl.MPC.use

@@ -91,9 +91,9 @@ if  strcmp(model.buildingType,'HollandschHuys')
     % therrmal comfort index of active timesteps
     TCF_index = [];
     for k = 0:days-1
-       if (k+1)/7 == round((k+1)/7)
+       if (k+4)/7 == round((k+4)/7)
            TCF_index = [TCF_index];
-       elseif k/7 == round(k/7)
+       elseif (k+3)/7 == round((k+3)/7)
            TCF_index = [TCF_index];
        else
            TCF_index = [TCF_index, k*day_steps+TCF_start_steps:k*day_steps+TCF_end_steps];
@@ -174,21 +174,18 @@ if  strcmp(model.buildingType,'HollandschHuys')
         % Ground source heat pump
         Tground_index = 224;
         Tground = dist.d(:,Tground_index) - 273.15;
-
-        references.COP = zeros(size(Te,1),model.pred.nu);
-        for i = 1:model.pred.nu
-            references.COP(:,i) = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10)); % Correlation formula for COP
-        end
-    else 
+        COP = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10));
+    else
         % Air source heat pump
-        references.COP = zeros(size(Te,1),model.pred.nu);
-        for i = 1:model.pred.nu
-            references.COP(:,i) = 0.38*((Tsupply+273.15)./(Tsupply - Te + 10));
-        end
+        COP = 0.38*((Tsupply+273.15)./(Tsupply - Te + 10));
+        
     end
-    references.COP = references.COP';
+    references.COP = repmat(COP,1,model.pred.nu)';
     references.COP(references.COP>6) = 6;
-
+    
+%     CorrelationParams = [c0 c1 c2 c3 c4 c5];
+%     COP = c0 + c1*Tground + c2*Tsupply + c3*(Tground^2) + c4*(Tsupply^2) + c5*Tground*Tsupply;
+%     references.COP = repmat(COP,1,model.pred.nu)';
 else
     %% comfort boundaries
     % function eval for full year comfort boundaries profiles in K
@@ -252,6 +249,9 @@ else
     % repeat elements of vector to fit the sampling
     WB = repelem(TLow,day_steps)' + 273.15;
     WA = repelem(TUp,day_steps)' + 273.15;
+    % If you want the building to be kept on a constant temperature
+%     WB(:,:) = 22 + 273.15;
+%     WA=WB;
 
 
     %%  night setbacks
@@ -269,9 +269,9 @@ else
     % therrmal comfort index of active timesteps
     TCF_index = [];
     for k = 0:days-1
-       if (k+1)/7 == round((k+1)/7)
+       if (k+4)/7 == round((k+4)/7)
            TCF_index = [TCF_index, k*day_steps+TCF_start1_steps:k*day_steps+TCF_end2_steps];
-       elseif k/7 == round(k/7)
+       elseif (k+3)/7 == round((k+3)/7)
            TCF_index = [TCF_index, k*day_steps+TCF_start1_steps:k*day_steps+TCF_end2_steps];
        else
            TCF_index = [TCF_index, k*day_steps+TCF_start1_steps:k*day_steps+TCF_end1_steps, k*day_steps+TCF_start2_steps:k*day_steps+TCF_end2_steps ];
@@ -350,19 +350,13 @@ else
         % Ground source heat pump
         Tground_index = 44;
         Tground = dist.d(:,Tground_index) - 273.15;
-
-        references.COP = zeros(size(Te,1),model.pred.nu);
-        for i = 1:model.pred.nu
-            references.COP(:,i) = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10));
-        end
+        COP = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10));
     else
         % Air source heat pump
-        references.COP = zeros(size(Te,1),model.pred.nu);
-        for i = 1:model.pred.nu
-            references.COP(:,i) = 0.38*((Tsupply+273.15)./(Tsupply - Te + 10));
-        end
+        COP = 0.38*((Tsupply+273.15)./(Tsupply - Te + 10));
+        
     end
-    references.COP = references.COP';
+    references.COP = repmat(COP,1,model.pred.nu)';
     references.COP(references.COP>6) = 6;
 end
 

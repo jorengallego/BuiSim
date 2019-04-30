@@ -282,7 +282,6 @@ if PlotParam.plotPrice && outdata.ctrl.use
 %     price profile
     subplot(3, 1, 1); 
     plot(Time, outdata.data.ElectricityPrice, 'linewidth', 2);
-%     plot(Time, outdata.data.Price, 'linewidth', 2);
     title('Electricity Price Profile');
     axis tight
     grid on
