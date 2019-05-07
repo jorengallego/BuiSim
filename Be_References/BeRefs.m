@@ -258,8 +258,8 @@ else
     % thermal comfort start and end hour
     TCF_start1_hour = 7;
     TCF_end1_hour = 9;
-    TCF_start2_hour = 16;
-    TCF_end2_hour = 23;
+    TCF_start2_hour = 17;
+    TCF_end2_hour = 22;
     % hours to simsteps
     TCF_start1_steps = TCF_start1_hour*3600/model.plant.Ts;
     TCF_end1_steps = TCF_end1_hour*3600/model.plant.Ts;
@@ -312,7 +312,7 @@ else
             references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
         else   
         %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-            references.ElectricityPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+            references.ElectricityPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))';% - factor*heaviside((1:length(WB))-(((day*24)+hour+5)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
         %        references.ElectricityPrice = rectangularPulse(2,3,1:length(WB));
             references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
             %    TODO:  load price profile interface

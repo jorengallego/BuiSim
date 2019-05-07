@@ -138,7 +138,7 @@ model.pred.Ts = pred_mod.Ts;  % simulation sampling time
     
 %% Control input constraints
     model.pred.umax = 10000*ones(model.pred.nu,1);
-    model.pred.umin = -10000*ones(model.pred.nu,1);
+    model.pred.umin = zeros(model.pred.nu,1);
 
 %% post processing of individual models
 
@@ -194,7 +194,16 @@ if  strcmp(buildingType,'HollandschHuys')
 %     lump constraints
     model.pred.umax = model.pred.umax(1:model.pred.nu);
     model.pred.umin = model.pred.umin(1:model.pred.nu);  
-
+    
+elseif strcmp(model.buildingType,'Reno') || strcmp(model.buildingType,'RenoLight') || strcmp(model.buildingType,'Old')
+    
+    % Heat gains in residential buildings as disturbance
+    ExtraColumns_HeatGains = zeros(size(model.plant.Ed,1),6);
+    ExtraColumns_HeatGains(1:6,:) = 0;
+    model.plant.Ed = [model.plant.Ed, ExtraColumns_HeatGains]; %  adding columns for heat gains
+    model.plant.nd = size(model.plant.Ed, 2);
+    model.pred.Ed = [model.pred.Ed, ExtraColumns_HeatGains];  %  adding supply temp for ventilation
+    model.pred.nd = size(model.pred.Ed, 2);
 end
 
 if  ModelParam.Orders.off_free % use augmented prediction model for offset free control

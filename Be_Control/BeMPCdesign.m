@@ -169,8 +169,8 @@ end
 
     %   -------------  OBJECTIVE FUNCTION  -------------
         %    % quadratic objective function withouth states constr.  penalisation
-                obj = obj + s(:,k)'*Qsb*s(:,k) + ...         %  comfort zone penalization
-                              P*((uk'./copk')*Qu*(uk./copk));                              %  quadratic penalization of ctrl action move blocking formulation
+               obj = obj + sum(Qsb*s(:,k),1) + ...         %  comfort zone penalization
+                              sum(P*Qu*abs(uk./copk),1);                              %  quadratic penalization of ctrl action move blocking formulation
     end
 
 

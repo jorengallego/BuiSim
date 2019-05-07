@@ -305,7 +305,6 @@ if PlotParam.plotPrice && outdata.ctrl.use
     ylabel('Cost [Euro]')
     xlabel('time [days]')
     yyaxis right
-%     plot(Time, outdata.data.Price, 'linewidth', 2);
     plot(Time, outdata.data.ElectricityPrice, 'linewidth', 2);
     ylabel('Price [Euro/kWh]')
     

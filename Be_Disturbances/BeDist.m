@@ -38,6 +38,20 @@ if  strcmp(model.buildingType,'HollandschHuys')
     VenTsup = repmat(VenTsup_temp,[size(v,1),12]);
     dusturb.t = t;
     dusturb.d = [v, VenTsup];
+    
+elseif strcmp(model.buildingType,'Reno') || strcmp(model.buildingType,'RenoLight') || strcmp(model.buildingType,'Old')
+    HeatGains_temp = [];     %Set internal gains of residential building according to Bram vd Heijde
+    for i = 1:96 
+        if ismember(i,1:27) || ismember(i,36:67) || ismember(i,88:96)
+            HeatGains_temp(i) = 200;
+        else
+            HeatGains_temp(i) = 835;
+        end
+    end
+    HeatGains = repmat(HeatGains_temp',365,6);
+    HeatGains = [HeatGains; HeatGains(1:(size(v,1)-size(HeatGains,1)),:)]; %Weekends nog integreren (zoals bij comfortgrenzen)
+    dusturb.t = t;
+    dusturb.d = [v, HeatGains];
 else
     dusturb.t = t;
     dusturb.d = v;
