@@ -183,6 +183,8 @@ if  strcmp(model.buildingType,'HollandschHuys')
     references.COP = repmat(COP,1,model.pred.nu)';
     references.COP(references.COP>6) = 6;
     
+    references.EER = references.COP + 5;
+    
 %     CorrelationParams = [c0 c1 c2 c3 c4 c5];
 %     COP = c0 + c1*Tground + c2*Tsupply + c3*(Tground^2) + c4*(Tsupply^2) + c5*Tground*Tsupply;
 %     references.COP = repmat(COP,1,model.pred.nu)';
@@ -358,6 +360,9 @@ else
     end
     references.COP = repmat(COP,1,model.pred.nu)';
     references.COP(references.COP>6) = 6;
+    
+    references.EER = references.COP + 5;
+    
 end
 
 fprintf('*** Done.\n')

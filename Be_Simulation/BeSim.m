@@ -125,6 +125,7 @@ else   % initialize matrices for closed loop control simulations
     Price = refs.Price(SimStart:SimStop+N,:)'; % /W
     ElectricityPrice = refs.ElectricityPrice(SimStart:SimStop+N,:)'; % /kWh
     COP = refs.COP(:,SimStart:SimStop+N);
+    EER = refs.EER(:,SimStart:SimStop+N);
 
     if ctrl.RBC.use
         % supply water temperature
@@ -222,20 +223,21 @@ for k = 1:Nsim
             % preview of the price signal
             Price_prev = Price(:, k:k+(ctrl.MPC.Nrp-1));
             COP_prev = COP(:, k:k+(ctrl.MPC.Nrp-1));
+            EER_prev = EER(:, k:k+(ctrl.MPC.Nrp-1));
             
             
 %             TODO:  adapt Dpreview wa_prev wb_prev
             if estim.use   % estimated states
                 if model.plant.nd == 0  %  no disturbnances option
-                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{xp, wa_prev, wb_prev, Price_prev, COP_prev}}; % optimizer with estimated states
+                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{xp, wa_prev, wb_prev, Price_prev, COP_prev, EER_prev}}; % optimizer with estimated states
                 else
-                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{xp, Dpreview, wa_prev, wb_prev, Price_prev, COP_prev}}; % optimizer with estimated states
+                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{xp, Dpreview, wa_prev, wb_prev, Price_prev, COP_prev, EER_prev}}; % optimizer with estimated states
                 end
             else    % perfect state update
                 if model.plant.nd == 0  %  no disturbnances option
-                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{x0, wa_prev, wb_prev, Price_prev, COP_prev}}; % optimizer with estimated states
+                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{x0, wa_prev, wb_prev, Price_prev, COP_prev, EER_prev}}; % optimizer with estimated states
                 else
-                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{x0, Dpreview, wa_prev, wb_prev, Price_prev, COP_prev}}; % optimizer with measured states  
+                     [opt_out, feasible, info1, info2] =  ctrl.MPC.optimizer{{x0, Dpreview, wa_prev, wb_prev, Price_prev, COP_prev, EER_prev}}; % optimizer with measured states  
                 end
                  
             end
@@ -499,6 +501,8 @@ if  ctrl.use
     Qheat = 1;   % heat coefficient
     Qcool = 1;   % cool coefficient
     E = U./COP(:,1:k);
+    E2 = U./EER(:,1:k);
+    E(E<0) = E2(E2<0);
     Eheat = E(E>0);
     Ecool  = E(E<0);
    
@@ -646,6 +650,7 @@ if ctrl.use
     outdata.data.TotalCost = sum(Eurocost); % Total cost of electricity in simulation [€]
 %     COP
     outdata.data.COP = COP(:,1:k);
+    outdata.data.EER = EER(:,1:k);
 %     if ctrl.MPC.use
 %         % obj function
 %         outdata.data.J = J;

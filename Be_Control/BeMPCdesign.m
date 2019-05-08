@@ -40,7 +40,10 @@ end
     % variables
     x = sdpvar(nx, N+1, 'full'); % states of the building
     d_prev = sdpvar(nd, Ndp, 'full'); % disturbances with preview
-    u = sdpvar(nu, Nc, 'full'); % ctrl action - heat commanded by the thermostat [W]
+    uc = sdpvar(nu, Nc, 'full'); % ctrl action - cooling commanded by the thermostat [W]
+    uh = sdpvar(nu, Nc, 'full'); % ctrl action - heating commanded by the thermostat [W]
+    u = uc + uh;
+%     u = sdpvar(nu, Nc, 'full'); % ctrl action - heat commanded by the thermostat [W]
     y = sdpvar(ny, N, 'full'); % output = indoor temperatures [degC]
     s = sdpvar(ny, N, 'full'); %  general slack
     % above and below threshold -- dynamic comfort zone 
@@ -50,7 +53,7 @@ end
     price = sdpvar(1, Nrp, 'full');
     % variable COP profile
     cop = sdpvar(nu, Nc, 'full');
-    
+    eer = sdpvar(nu, Nc, 'full');
 %     u_traj = sdpvar(nu, Nc, 'full');
     
     % weight diagonal matrices 
@@ -90,12 +93,18 @@ end
 
             % move blocking
         if k > Nc
-            uk = u(:,Nc);
+            uck = uc(:,Nc);
+            uhk = uh(:,Nc);
+            uk = uck + uhk;
             copk = cop(:,Nc);
+            eerk = cop(:,Nc);
 %             u_traj(:,k) = u(:,Nc);
         else
-            uk = u(:,k);
+            uck = uc(:,k);
+            uhk = uh(:,k);
+            uk = uck + uhk;
             copk = cop(:,k);
+            eerk = cop(:,k);
 %             u_traj(:,k) = u(:,k);
         end
 
@@ -163,14 +172,15 @@ end
         %         % comfort zone with  violation penalty - dynamic comfort zone
              con = con + [ wb-s(:,k)<= y(:,k) <=wa+s(:,k) ];
             %   input constraints
-            con = con + [  model.pred.umin <= uk <= model.pred.umax];
+            con = con + [  model.pred.umin <= uck <= 0];
+            con = con + [ 0 <= uhk <= model.pred.umax ];
         % %       slack constraints 
          con = con + [0*ones(model.pred.ny,1)<=s(:,k)];
 
     %   -------------  OBJECTIVE FUNCTION  -------------
         %    % quadratic objective function withouth states constr.  penalisation
                obj = obj + sum(Qsb*s(:,k),1) + ...         %  comfort zone penalization
-                              sum(P*Qu*abs(uk./copk),1);                              %  quadratic penalization of ctrl action move blocking formulation
+                              sum(P*Qu*(abs(uck./eerk)+abs(uhk./copk)),1);                              %  quadratic penalization of ctrl action move blocking formulation
     end
 
 
@@ -186,9 +196,9 @@ end
 
     % optimizer for dynamic comfort zone
     if nd == 0  % no disturbances formulation
-        mpc = optimizer(con, obj, options,  { x(:, 1), wa_prev, wb_prev, price, cop }, {u(:,1); obj} );
+        mpc = optimizer(con, obj, options,  { x(:, 1), wa_prev, wb_prev, price, cop, eer }, {u(:,1); obj} );
     else
-        mpc = optimizer(con, obj, options,  { x(:, 1), d_prev, wa_prev, wb_prev, price, cop }, {u(:,1); obj} );
+        mpc = optimizer(con, obj, options,  { x(:, 1), d_prev, wa_prev, wb_prev, price, cop, eer }, {u(:,1); obj} );
     end
     
     
