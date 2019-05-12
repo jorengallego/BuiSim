@@ -172,22 +172,21 @@ if  strcmp(model.buildingType,'HollandschHuys')
     
     if RefsParam.HP.ground
         % Ground source heat pump
+        c0 = 9.45851; c1 = 0.20159; c2 = -0.17019;
+        c3 = 0.00039693; c4 = 0.00092547; c5 = -0.0023720;
         Tground_index = 224;
         Tground = dist.d(:,Tground_index) - 273.15;
-        COP = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10));
+        COP = c0 + c1*Tground + c2*Tsupply + c3*(Tground^2) + c4*(Tsupply^2) + c5*Tground*Tsupply;
+        references.COP = repmat(COP,1,model.pred.nu)';
     else
         % Air source heat pump
         COP = 0.38*((Tsupply+273.15)./(Tsupply - Te + 10));
-        
+        references.COP = repmat(COP,1,model.pred.nu)';
+        references.COP(references.COP>6) = 6;
     end
-    references.COP = repmat(COP,1,model.pred.nu)';
-    references.COP(references.COP>6) = 6;
     
     references.EER = references.COP + 5;
     
-%     CorrelationParams = [c0 c1 c2 c3 c4 c5];
-%     COP = c0 + c1*Tground + c2*Tsupply + c3*(Tground^2) + c4*(Tsupply^2) + c5*Tground*Tsupply;
-%     references.COP = repmat(COP,1,model.pred.nu)';
 else
     %% comfort boundaries
     % function eval for full year comfort boundaries profiles in K
@@ -329,39 +328,55 @@ else
     
     Tsupply = zeros(size(Te,1),1); % Supply temperature based on heating curve PhD Damien Picard
     for i = 1:size(Tsupply,1)
-        if Te(i) <= -20
-            Tsupply(i) = 65;
-        elseif -20 < Te(i) <= -10
-            Tsupply(i) = 65 - (6/10)*(Te(i) + 20);
-        elseif -10 < Te(i) <= -5
-            Tsupply(i) = 59 - (4/5)*(Te(i) + 10);
-        elseif -5 < Te(i) <= 0
-            Tsupply(i) = 55 - (12/5)*(Te(i) + 5);
-        elseif 0 < Te(i) <= 5
-            Tsupply(i) = 43 - (4/5)*Te(i);
-        elseif 5 < Te(i) <= 10
-            Tsupply(i) = 39 - (6/5)*(Te(i) - 5);
-        elseif 10 < Te(i) <= 20
-            Tsupply(i) = 33 - (8/10)*(Te(i) - 10);
+        if Te(i) <= -7
+            Tsupply(i) = 75;
+        elseif -7 < Te(i) <= 15
+            Tsupply(i) = 68.63636364 - (20/22)*Te(i);
         else
-            Tsupply(i) = 25;
+            Tsupply(i) = 55;
         end
-    end 
+    end
     
-    if RefsParam.HP.ground
-        % Ground source heat pump
-        Tground_index = 44;
-        Tground = dist.d(:,Tground_index) - 273.15;
-        COP = 0.5*((Tsupply+273.15)./(Tsupply - Tground + 10));
-    else
-        % Air source heat pump
-        COP = 0.38*((Tsupply+273.15)./(Tsupply - Te + 10));
+    if  strcmp(model.buildingType,'Old')
+        % High temperature HP 16kW
+        c0 = 1.81737; c1 = 0.091224; c2 = 0.043883; 
+        c3 = 0.0014346; c4 = -0.00053603; c5 = -0.00073929;
+    elseif strcmp(model.buildingType,'Reno')
+        % High temperature HP 14kW
+        c0 = 1.85031; c1 = 0.10354; c2 = 0.046302; 
+        c3 = 0.0016897; c4 = -0.00057315; c5 = -0.00083778;
+    elseif strcmp(model.buildingType,'RenoLight')
+        % High temperature HP 11kW
+        c0 = 2.53957; c1 = 0.11909; c2 = 0.028578;
+        c3 = 0.0015845; c4 = -0.00045313; c5 = -0.00095888; 
+        % Low temperature HP 6kW
+%         c0 = 6.57644; c1 = 0.16312; c2 = -0.10941;
+%         c3 = 0.00046445; c4 = 0.00051668; c5 = -0.0015987;
+%         for i = 1:size(Tsupply,1)
+%             if Te(i) <= -7
+%                 Tsupply(i) = 55;
+%             elseif -7 < Te(i) <= 15
+%                 Tsupply(i) = 45.454545 - (30/22)*Te(i);
+%             else
+%                 Tsupply(i) = 25;
+%             end
+%         end
         
     end
+%     if RefsParam.HP.ground
+%         % Ground source heat pump
+%         Tground_index = 44;
+%         Tground = dist.d(:,Tground_index) - 273.15;
+%         COP = c0 + c1*Tground + c2*Tsupply + c3*(Tground^2) + c4*(Tsupply^2) + c5*Tground*Tsupply;
+%     else
+        % Air source heat pump
+    COP = c0 + c1*Te + c2*Tsupply + c3*(Te^2) + c4*(Tsupply^2) + c5*Te*Tsupply;
+
+%     end
     references.COP = repmat(COP,1,model.pred.nu)';
-    references.COP(references.COP>6) = 6;
     
     references.EER = references.COP + 5;
+
     
 end
 

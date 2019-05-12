@@ -38,6 +38,8 @@ if  strcmp(model.buildingType,'HollandschHuys')
     VenTsup = repmat(VenTsup_temp,[size(v,1),12]);
     dusturb.t = t;
     dusturb.d = [v, VenTsup];
+    load('InternalGainsHH.mat')
+    dusturb.d(:,266:289) = InternalGainsHH;
     
 elseif strcmp(model.buildingType,'Reno') || strcmp(model.buildingType,'RenoLight') || strcmp(model.buildingType,'Old')
     HeatGains_temp = [];     %Set internal gains of residential building according to Bram vd Heijde
