@@ -176,7 +176,7 @@ if  strcmp(model.buildingType,'HollandschHuys')
         c3 = 0.00039693; c4 = 0.00092547; c5 = -0.0023720;
         Tground_index = 224;
         Tground = dist.d(:,Tground_index) - 273.15;
-        COP = c0 + c1*Tground + c2*Tsupply + c3*(Tground^2) + c4*(Tsupply^2) + c5*Tground*Tsupply;
+        COP = c0 + c1*Tground + c2*Tsupply + c3*(Tground.^2) + c4*(Tsupply.^2) + c5*Tground.*Tsupply;
         references.COP = repmat(COP,1,model.pred.nu)';
     else
         % Air source heat pump
@@ -185,7 +185,8 @@ if  strcmp(model.buildingType,'HollandschHuys')
         references.COP(references.COP>6) = 6;
     end
     
-    references.EER = references.COP + 5;
+    EER = 15*ones(size(Te,1),1);
+    references.EER = repmat(EER,1,model.pred.nu)';
     
 else
     %% comfort boundaries
@@ -346,21 +347,24 @@ else
         c0 = 1.85031; c1 = 0.10354; c2 = 0.046302; 
         c3 = 0.0016897; c4 = -0.00057315; c5 = -0.00083778;
     elseif strcmp(model.buildingType,'RenoLight')
-        % High temperature HP 11kW
-        c0 = 2.53957; c1 = 0.11909; c2 = 0.028578;
-        c3 = 0.0015845; c4 = -0.00045313; c5 = -0.00095888; 
-        % Low temperature HP 6kW
-%         c0 = 6.57644; c1 = 0.16312; c2 = -0.10941;
-%         c3 = 0.00046445; c4 = 0.00051668; c5 = -0.0015987;
-%         for i = 1:size(Tsupply,1)
-%             if Te(i) <= -7
-%                 Tsupply(i) = 55;
-%             elseif -7 < Te(i) <= 15
-%                 Tsupply(i) = 45.454545 - (30/22)*Te(i);
-%             else
-%                 Tsupply(i) = 25;
-%             end
-%         end
+        if RefsParam.HP.hightemperature
+            % High temperature HP 11kW
+            c0 = 2.53957; c1 = 0.11909; c2 = 0.028578;
+            c3 = 0.0015845; c4 = -0.00045313; c5 = -0.00095888; 
+        else    
+            % Low temperature HP 6kW
+            c0 = 6.57644; c1 = 0.16312; c2 = -0.10941;
+            c3 = 0.00046445; c4 = 0.00051668; c5 = -0.0015987;
+            for i = 1:size(Tsupply,1)
+                if Te(i) <= -7
+                    Tsupply(i) = 55;
+                elseif -7 < Te(i) <= 15
+                    Tsupply(i) = 45.454545 - (30/22)*Te(i);
+                else
+                    Tsupply(i) = 25;
+                end
+            end
+        end   
         
     end
 %     if RefsParam.HP.ground
@@ -370,12 +374,13 @@ else
 %         COP = c0 + c1*Tground + c2*Tsupply + c3*(Tground^2) + c4*(Tsupply^2) + c5*Tground*Tsupply;
 %     else
         % Air source heat pump
-    COP = c0 + c1*Te + c2*Tsupply + c3*(Te^2) + c4*(Tsupply^2) + c5*Te*Tsupply;
+    COP = c0 + c1*Te + c2*Tsupply + c3*(Te.^2) + c4*(Tsupply.^2) + c5*Te.*Tsupply;
 
 %     end
     references.COP = repmat(COP,1,model.pred.nu)';
     
-    references.EER = references.COP + 5;
+    EER = 15*ones(size(Te,1),1);
+    references.EER = repmat(EER,1,model.pred.nu)';
 
     
 end
