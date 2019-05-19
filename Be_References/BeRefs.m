@@ -185,8 +185,8 @@ if  strcmp(model.buildingType,'HollandschHuys')
         references.COP(references.COP>6) = 6;
     end
     
-    EER = 15*ones(size(Te,1),1);
-    references.EER = repmat(EER,1,model.pred.nu)';
+    SPF = 13.42*ones(size(Te,1),1);
+    references.SPF = repmat(SPF,1,model.pred.nu)';
     
 else
     %% comfort boundaries
@@ -379,8 +379,8 @@ else
 %     end
     references.COP = repmat(COP,1,model.pred.nu)';
     
-    EER = 15*ones(size(Te,1),1);
-    references.EER = repmat(EER,1,model.pred.nu)';
+    SPF = 15*ones(size(Te,1),1);
+    references.SPF = repmat(SPF,1,model.pred.nu)';
 
     
 end

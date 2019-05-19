@@ -139,16 +139,16 @@ model.pred.Ts = pred_mod.Ts;  % simulation sampling time
 %% Control input constraints
     model.pred.umin = zeros(model.pred.nu,1);
     if  strcmp(buildingType,'Old')
-        model.pred.umax = (16000/model.pred.nu)*ones(model.pred.nu,1);
+        model.pred.umax = [3984 1740 943 2291 1155 887]';
     elseif  strcmp(buildingType,'Reno')
-        model.pred.umax = (14000/model.pred.nu)*ones(model.pred.nu,1);
+        model.pred.umax = [2938 1805 1199 2447 1380 1233]';
     elseif  strcmp(buildingType,'RenoLight')
         if RefsParam.HP.hightemperature
-            model.pred.umax = (11000/model.pred.nu)*ones(model.pred.nu,1);
+            model.pred.umax = [2638 1905 1455 2000 1531 1469]';
         else
-            model.pred.umax = (6000/model.pred.nu)*ones(model.pred.nu,1);
+            model.pred.umax = [1805 1072 622 1167 698 636]';
         end  
-    end  
+    end   
 
 %% post processing of individual models
 

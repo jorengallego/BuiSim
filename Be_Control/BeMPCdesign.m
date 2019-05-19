@@ -53,7 +53,7 @@ end
     price = sdpvar(1, Nrp, 'full');
     % variable COP profile
     cop = sdpvar(nu, Nc, 'full');
-    eer = sdpvar(nu, Nc, 'full');
+    spf = sdpvar(nu, Nc, 'full');
 %     u_traj = sdpvar(nu, Nc, 'full');
     
     % weight diagonal matrices 
@@ -97,14 +97,14 @@ end
             uhk = uh(:,Nc);
             uk = uck + uhk;
             copk = cop(:,Nc);
-            eerk = cop(:,Nc);
+            spfk = cop(:,Nc);
 %             u_traj(:,k) = u(:,Nc);
         else
             uck = uc(:,k);
             uhk = uh(:,k);
             uk = uck + uhk;
             copk = cop(:,k);
-            eerk = cop(:,k);
+            spfk = cop(:,k);
 %             u_traj(:,k) = u(:,k);
         end
 
@@ -180,7 +180,7 @@ end
     %   -------------  OBJECTIVE FUNCTION  -------------
         %    % quadratic objective function withouth states constr.  penalisation
                obj = obj + sum(Qsb*s(:,k),1) + ...         %  comfort zone penalization
-                              sum(P*Qu*(abs(uck./eerk)+abs(uhk./copk)),1);                              %  quadratic penalization of ctrl action move blocking formulation
+                              sum(P*Qu*(abs(uck./spfk)+abs(uhk./copk)),1);                              %  quadratic penalization of ctrl action move blocking formulation
     end
 
 
@@ -196,9 +196,9 @@ end
 
     % optimizer for dynamic comfort zone
     if nd == 0  % no disturbances formulation
-        mpc = optimizer(con, obj, options,  { x(:, 1), wa_prev, wb_prev, price, cop, eer }, {u(:,1); obj} );
+        mpc = optimizer(con, obj, options,  { x(:, 1), wa_prev, wb_prev, price, cop, spf }, {u(:,1); obj} );
     else
-        mpc = optimizer(con, obj, options,  { x(:, 1), d_prev, wa_prev, wb_prev, price, cop, eer }, {u(:,1); obj} );
+        mpc = optimizer(con, obj, options,  { x(:, 1), d_prev, wa_prev, wb_prev, price, cop, spf }, {u(:,1); obj} );
     end
     
     
