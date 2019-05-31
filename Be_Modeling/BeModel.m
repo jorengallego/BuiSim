@@ -143,7 +143,7 @@ model.pred.Ts = pred_mod.Ts;  % simulation sampling time
     elseif  strcmp(buildingType,'Reno')
         model.pred.umax = [2938 1805 1199 2447 1380 1233]';
     elseif  strcmp(buildingType,'RenoLight')
-        if RefsParam.HP.hightemperature
+        if ModelParam.HP.hightemperature
             model.pred.umax = [2638 1905 1455 2000 1531 1469]';
         else
             model.pred.umax = [1805 1072 622 1167 698 636]';

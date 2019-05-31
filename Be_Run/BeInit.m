@@ -112,8 +112,8 @@ if PlotParam.flagPlot
     BePlot(outdata,PlotParam)
 end
  
-ADRElectricity = outdata.data.E;
-ADRTemperatures = outdata.data.X;
-save('C:\Users\Joren\Documents\BeSim Kwantificatie Flexibiliteit\OutputADRElectricity.mat', 'ADRElectricity');
-save('C:\Users\Joren\Documents\BeSim Kwantificatie Flexibiliteit\OutputADRTemperatures.mat', 'ADRTemperatures'); 
+% ADRElectricity = outdata.data.E;
+% ADRTemperatures = outdata.data.X;
+% save('C:\Users\Joren\Documents\BeSim Kwantificatie Flexibiliteit\OutputADRElectricity.mat', 'ADRElectricity');
+% save('C:\Users\Joren\Documents\BeSim Kwantificatie Flexibiliteit\OutputADRTemperatures.mat', 'ADRTemperatures'); 
  

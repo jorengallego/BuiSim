@@ -133,7 +133,7 @@ if  strcmp(model.buildingType,'HollandschHuys')
             references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
         else   
         %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-            references.ElectricityPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))'; % + 0.8*heaviside((1:length(WB))-(((187*24)+14)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+            references.ElectricityPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))' - factor*heaviside((1:length(WB))-(((day*24)+hour+9)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
         %        references.ElectricityPrice = rectangularPulse(2,3,1:length(WB));
             references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
             %    TODO:  load price profile interface
@@ -310,11 +310,11 @@ else
             for i = 1:8760
                 references.ElectricityPrice = [references.ElectricityPrice, Belpex2018(i), Belpex2018(i), Belpex2018(i), Belpex2018(i)];
             end   
-            references.ElectricityPrice = references.ElectricityPrice'/1000; % Prices in €/kWh
+            references.ElectricityPrice = references.ElectricityPrice'/1000 + factor*heaviside((1:35040)-(((day*24)+hour)*4))' - factor*heaviside((1:35040)-(((day*24)+hour+6)*4))'; % Prices in €/kWh
             references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
         else   
         %        references.Price = 1+sin(0.01*(1:length(WB)))'; % variable price profile
-            references.ElectricityPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))';% - factor*heaviside((1:length(WB))-(((day*24)+hour+5)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
+            references.ElectricityPrice = stdprice + factor*heaviside((1:length(WB))-(((day*24)+hour)*4))' - factor*heaviside((1:length(WB))-(((day*24)+hour+6)*4))' ; % [€/kWh] ((#days*24hours) + statpoint step) * #quarters in 1 hour
         %        references.ElectricityPrice = rectangularPulse(2,3,1:length(WB));
             references.Price = references.ElectricityPrice*Ts/3600/1000; % [€/W]
             %    TODO:  load price profile interface
@@ -338,34 +338,25 @@ else
         end
     end
     
-    if  strcmp(model.buildingType,'Old')
-        % High temperature HP 16kW
-        c0 = 1.81737; c1 = 0.091224; c2 = 0.043883; 
-        c3 = 0.0014346; c4 = -0.00053603; c5 = -0.00073929;
-    elseif strcmp(model.buildingType,'Reno')
-        % High temperature HP 14kW
-        c0 = 1.85031; c1 = 0.10354; c2 = 0.046302; 
-        c3 = 0.0016897; c4 = -0.00057315; c5 = -0.00083778;
-    elseif strcmp(model.buildingType,'RenoLight')
-        if RefsParam.HP.hightemperature
-            % High temperature HP 11kW
-            c0 = 2.53957; c1 = 0.11909; c2 = 0.028578;
-            c3 = 0.0015845; c4 = -0.00045313; c5 = -0.00095888; 
-        else    
-            % Low temperature HP 6kW
-            c0 = 6.57644; c1 = 0.16312; c2 = -0.10941;
-            c3 = 0.00046445; c4 = 0.00051668; c5 = -0.0015987;
-            for i = 1:size(Tsupply,1)
-                if Te(i) <= -7
-                    Tsupply(i) = 55;
-                elseif -7 < Te(i) <= 15
-                    Tsupply(i) = 45.454545 - (30/22)*Te(i);
-                else
-                    Tsupply(i) = 25;
-                end
+   
+    if RefsParam.HP.hightemperature
+        % High temperature HP 11kW
+        c0 = 2.53957; c1 = 0.11909; c2 = 0.028578;
+        c3 = 0.0015845; c4 = -0.00045313; c5 = -0.00095888; 
+    else    
+        % Low temperature HP 6kW
+        c0 = 9.33207; c1 = 0.28926; c2 = -0.20465;
+        c3 = 0.001101; c4 = 0.0012242; c5 = -0.0040678;
+        for i = 1:size(Tsupply,1)
+            if Te(i) <= -7
+                Tsupply(i) = 55;
+            elseif -7 < Te(i) <= 15
+                Tsupply(i) = 45.454545 - (30/22)*Te(i);
+            else
+                Tsupply(i) = 25;
             end
-        end   
-        
+        end
+
     end
 %     if RefsParam.HP.ground
 %         % Ground source heat pump

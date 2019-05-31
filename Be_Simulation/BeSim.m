@@ -94,7 +94,9 @@ if  strcmp(model.buildingType,'HollandschHuys')
 %     path = ['../buildings/', model.buildingType];
     load([path '/preComputed_matlab/X_initialization.mat'],'x_init');
 %     load('X_initialization.mat','x_init')
-	X(:,1) = x_init;
+    load('X10jan.mat','Xjan')
+    X(:,1) = Xjan;
+% 	X(:,1) = x_init;
 %     X(:,1) = SimParam.X;
 end
 
